@@ -47,7 +47,11 @@ challenges/<nom-challenge>/
 ├── recon-report.md     # Rapport de reconnaissance structuré
 ├── exploit-log.md      # Journal chronologique des tentatives
 ├── flag.txt            # Le flag extrait
-└── writeup.md          # Writeup final
+├── writeup.md          # Writeup final
+├── cleanup.sh          # Script de nettoyage (supprime work/)
+├── .gitignore          # Ignore work/
+└── work/               # Fichiers de travail temporaires (zips, binaires, extractions)
+                        # → NON commités, supprimés par cleanup.sh après le challenge
 ```
 
 ## Outils disponibles
