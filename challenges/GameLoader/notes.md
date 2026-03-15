@@ -27,12 +27,26 @@
 ### Erreurs à éviter
 - Knowledge base vide pour l'instant
 
-## Plan d'attaque
+## Description officielle
 
-1. **Static analysis** : `file`, `strings`, `binwalk` → identifier le type de binaire
-2. **Décompilation** : Ghidra/Radare2 → rechercher la logique de vérification du flag
-3. **Dynamic analysis** : exécuter avec `ltrace`/`strace`, GDB si nécessaire
-4. **Extract flag** : déobfusquer si nécessaire
+> "Despite having an updated antivirus, my computer was compromised after running a game. Investigate the game and uncover the two-part flag."
+
+→ Le jeu EST le malware. Flag en deux parties = deux actions malveillantes distinctes.
+
+## Plan d'attaque (malware analysis)
+
+### Priorité 1 — Analyse dynamique en sandbox (Windows VM)
+- Exécuter le jeu dans un environnement isolé
+- Monitor : Process Monitor, Regshot, Wireshark, API Monitor
+- Chercher : fichiers déposés, clés registre, connexions réseau, processus lancés
+
+### Priorité 2 — Extraction de la clé AES + décompilation GDScript
+- Capturer la clé via breakpoint sur `mbedtls_aes_setkey_enc` (x64dbg/Frida)
+- Décompiler avec GDRETools → lire le code malveillant dans `game.gd`
+
+### Priorité 3 — Wine + monitoring macOS
+- `wine "Platformer 2D.exe"` + `fs_usage`, `lsof`, Wireshark
+- Risque : comportement malware peut différer sous Wine
 
 ## Fichiers
 
