@@ -1,0 +1,52 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(nmap*)",
+      "Bash(gobuster*)",
+      "Bash(dirb*)",
+      "Bash(nikto*)",
+      "Bash(curl*)",
+      "Bash(wget*)",
+      "Bash(python3*)",
+      "Bash(searchsploit*)",
+      "Bash(nc*)",
+      "Bash(netcat*)",
+      "Bash(git*)",
+      "Bash(cat*)",
+      "Bash(ls*)",
+      "Bash(find*)",
+      "Bash(grep*)",
+      "Bash(echo*)",
+      "Bash(mkdir*)",
+      "Bash(cp*)",
+      "Bash(mv*)",
+      "Bash(chmod*)",
+      "Bash(head*)",
+      "Bash(tail*)",
+      "Bash(wc*)",
+      "Bash(sort*)",
+      "Bash(uniq*)",
+      "Bash(base64*)",
+      "Bash(xxd*)",
+      "Bash(file*)",
+      "Bash(strings*)",
+      "Bash(binwalk*)",
+      "Bash(exiftool*)"
+    ],
+    "deny": []
+  },
+  "env": {
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
+  },
+  "mcpServers": {
+    "git": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@anthropic-ai/mcp-server-git",
+        "--repository",
+        "."
+      ]
+    }
+  }
+}
