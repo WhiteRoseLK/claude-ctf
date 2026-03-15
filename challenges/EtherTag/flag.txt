@@ -1,3 +1,1 @@
-# Flag — EtherTag
-
-_(À compléter)_
+HTB{3th3rn3t1p_pwn3d}

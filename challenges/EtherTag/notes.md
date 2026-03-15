@@ -6,33 +6,46 @@
 - **Nom** : Ether Tag
 - **Cible** : 154.57.164.80:30375
 - **Date de début** : 2026-03-15
-- **Catégorie** : Web (challenge réseau — port non-standard, probablement web)
+- **Catégorie** : ICS (Industrial Control Systems)
 - **Difficulté** : inconnue
 
-## Observations initiales
+## Hypothèse principale
 
-- Port 30375 sur une IP publique → service exposé sur port non-standard
-- Nom "Ether Tag" → possiblement lié à Ethereum/blockchain, ou métaphore réseau (Ethernet)
-- À déterminer lors du recon initial
+**EtherNet/IP** — protocole industriel Allen-Bradley/Rockwell Automation.
+- Le terme "Tag" est le concept central d'EtherNet/IP : variables nommées exposées par un PLC
+- Port standard EtherNet/IP : 44818 (TCP), 2222 (UDP) → ici remappé sur 30375
+- Protocole : CIP (Common Industrial Protocol) encapsulé sur TCP
 
-## Points de la knowledge base pertinents
+## Protocoles ICS à connaître
 
-### Techniques à considérer (Web)
-- SQL Injection : tester formulaires et paramètres
-- XSS : si l'application affiche des données utilisateur
-- Command Injection : si l'app exécute des commandes système
-- LFI/Directory Traversal : si l'app lit des fichiers
+| Protocole     | Port std | Outils          |
+|---------------|----------|-----------------|
+| EtherNet/IP   | 44818    | pycomm3, cpppo  |
+| Modbus/TCP    | 502      | mbtget, pymodbus|
+| S7comm        | 102      | python-snap7    |
+| DNP3          | 20000    | OpenDNP3        |
+| BACnet        | 47808    | BACpypes        |
 
-### Erreurs à éviter
-- Knowledge base vide pour l'instant (premier challenge)
+## Outils ICS
+
+- `nmap --script enip-info` → fingerprint EtherNet/IP
+- `pycomm3` (Python) → lire/écrire des tags EtherNet/IP
+- `cpppo` → EtherNet/IP client Python
+- `mbtget` / `pymodbus` → Modbus
+- Wireshark avec dissecteurs ICS
 
 ## Plan d'attaque
 
-1. Recon : identifier le service sur le port 30375 (HTTP ? autre protocole ?)
-2. Enum web : gobuster, nikto, analyse de l'application
-3. Exploit : selon découvertes du recon
+1. **Recon** : nmap avec scripts ICS, identifier le protocole exact
+2. **Enumération** : lister les tags exposés (EtherNet/IP tag listing)
+3. **Exploit** : lire les tags (le flag est probablement stocké dans un tag PLC)
+
+## Notes ICS spécifiques
+
+- Les PLCs EtherNet/IP exposent souvent une liste de tags lisibles sans auth
+- Commande clé : lire tous les tags (`GetInstanceAttributeList` / tag browser)
+- pycomm3 : `from pycomm3 import CIPDriver; plc = CIPDriver('ip'); plc.get_tag_list()`
 
 ## Flags
 
-- User flag : _(à compléter)_
-- Root flag : _(à compléter)_
+- Flag : _(probablement dans un tag PLC nommé "flag" ou similaire)_
