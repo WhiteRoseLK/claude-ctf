@@ -22,17 +22,33 @@ CTF_DST="$HOME/.claude/ctf"
 info()  { printf '  \033[32m✓\033[0m %s\n' "$1"; }
 warn()  { printf '  \033[33m!\033[0m %s\n' "$1"; }
 
-# Crée un symlink dst -> src, en sauvegardant un dst réel préexistant.
+# Contenu de src et dst identique ? (dossier ou fichier)
+same_content() {
+  if [ -d "$1" ]; then diff -rq "$1" "$2" >/dev/null 2>&1; else cmp -s "$1" "$2"; fi
+}
+
+# Crée un symlink dst -> src, sans sauvegarde inutile.
+#   - déjà lié au bon endroit        -> ne touche à rien
+#   - contenu identique              -> remplace par un lien, PAS de sauvegarde
+#   - contenu différent              -> sauvegarde .bak.* PUIS remplace (jamais destructif)
 link() {
-  local src="$1" dst="$2"
+  local src="$1" dst="$2" name
+  name="$(basename "$dst")"
   if [ -L "$dst" ]; then
-    rm "$dst"                                   # ancien lien : on rafraîchit
+    [ "$(readlink "$dst")" = "$src" ] && { info "$name : déjà lié, rien à faire"; return; }
+    rm "$dst"                                   # ancien lien vers un autre endroit
   elif [ -e "$dst" ]; then
-    mv "$dst" "$dst.bak.$(date +%s)"            # vrai fichier/dossier : backup
-    warn "sauvegarde de l'existant : $dst.bak.*"
+    if same_content "$src" "$dst"; then
+      rm -rf "$dst"                             # identique : pas de sauvegarde inutile
+      ln -s "$src" "$dst"
+      info "$name : contenu identique, remplacé par un lien (sans sauvegarde)"
+      return
+    fi
+    mv "$dst" "$dst.bak.$(date +%s)"            # divergent : on préserve l'existant
+    warn "$name : contenu DIFFÉRENT, sauvegardé en $name.bak.* avant remplacement"
   fi
   ln -s "$src" "$dst"
-  info "$(basename "$dst") -> ${src#$REPO/}"
+  info "$name -> ${src#$REPO/}"
 }
 
 echo "== Installation des skills CTF =="
