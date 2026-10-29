@@ -1,0 +1,13 @@
+{
+  "active": {
+    "platform": "ctfd",
+    "url": null,
+    "token": ""
+  },
+  "platform": "ctfd",
+  "url": "https://ctf.example.com",
+  "token": "",
+  "auth_type": "session_cookie",
+  "user": "",
+  "team_id": null
+}
