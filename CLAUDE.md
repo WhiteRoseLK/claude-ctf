@@ -13,14 +13,25 @@ Chaque action doit être documentée pour produire un writeup et alimenter l'am�
 - **writeup** : Rédaction du writeup final pédagogique et reproductible
 - **review** : Retrospective, analyse de performance, mise à jour knowledge base
 
+## Couche skills (moteur technique)
+
+Les techniques CTF viennent des skills vendorés dans `skills/` (installés via `install.sh`) :
+- `solve-challenge` : dispatcher — triage puis routage vers la bonne catégorie
+- `ctf-web`, `ctf-pwn`, `ctf-crypto`, `ctf-reverse`, `ctf-forensics`, `ctf-malware`,
+  `ctf-osint`, `ctf-misc`, `ctf-ai-ml` : références profondes par catégorie
+- `ctf-connect` / `ctf-list` / `ctf-solve` / `ctf-submit` / `ctf-writeup` : intégration plateforme
+
+**Les agents orchestrent, les skills fournissent la technique.** On ne duplique jamais
+une technique de skill dans un agent ou dans la knowledge base.
+
 ## Workflow standard
 
 1. Initialiser le challenge avec `/ctf-start <plateforme> <challenge>`
-2. **Phase Recon** → agent recon produit `challenges/<challenge>/recon-report.md`
-3. **Phase Exploit** → agent exploit lit le rapport recon, tente les attaques, produit `challenges/<challenge>/exploit-log.md`
-4. **Soumission** → le flag est sauvé dans `challenges/<challenge>/flag.txt`
+2. **Phase Recon** → agent recon charge `solve-challenge`, triage, produit `recon-report.md` avec la **catégorie détectée**
+3. **Phase Exploit** → agent exploit charge le skill `ctf-<catégorie>`, attaque, produit `exploit-log.md`
+4. **Soumission** → `/ctf-submit <challenge> <flag>` archive dans `flag.txt` et soumet à la plateforme
 5. **Writeup** → agent writeup génère `challenges/<challenge>/writeup.md`
-6. **Retrospective** → `/ctf-retro` lance l'agent review
+6. **Retrospective** → `/ctf-retro <challenge>` lance l'agent review (met à jour la knowledge base)
 
 ## Conventions obligatoires
 

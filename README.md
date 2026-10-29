@@ -36,14 +36,17 @@ Le serveur MCP Git est configuré dans `.claude/settings.json` et sera installé
 git clone <url> ctf-workspace
 cd ctf-workspace
 
-# Initialiser git (si pas déjà fait)
-git init
-git add .
-git commit -m "[init] workspace CTF multi-agent"
+# Installer les skills + le CTF CLI (symlinks vers ~/.agents/skills et ~/.claude/ctf)
+./install.sh
 
+# Se connecter à une plateforme (token perso, jamais committé)
+#   via Claude Code : /ctf-connect htb <TOKEN>
 # Lancer Claude Code
 claude
 ```
+
+`install.sh` est **idempotent** et ne touche jamais à un `config.json` existant
+(ton token est préservé). Les secrets ne sont jamais versionnés (voir `.gitignore`).
 
 ## Utilisation
 
@@ -77,30 +80,21 @@ claude
 ```
 ctf-workspace/
 ├── CLAUDE.md                    # Instructions globales
+├── install.sh                   # Bootstrap (symlinks skills + CLI)
+├── skills/                      # Skills CTF vendorés (moteur technique)
+│   ├── solve-challenge/         #   dispatcher (triage + routage)
+│   ├── ctf-web/ ctf-pwn/ ...    #   références par catégorie
+│   └── ctf-connect/ ctf-submit/ #   intégration plateforme
+├── tools/ctf-cli/               # CTF CLI (connect/list/solve/submit)
+│   ├── ctf_cli.py
+│   └── config.example.json      #   template — config.json réelle gitignorée
 ├── .claude/
-│   ├── agents/                  # Définitions des agents
-│   │   ├── recon.md
-│   │   ├── exploit.md
-│   │   ├── writeup.md
-│   │   └── review.md
-│   ├── commands/                # Slash commands
-│   │   ├── ctf-start.md
-│   │   ├── ctf-submit.md
-│   │   └── ctf-retro.md
+│   ├── agents/                  # recon, exploit, writeup, review
+│   ├── commands/                # ctf-start, ctf-submit, ctf-retro
 │   └── settings.json            # Config MCP + permissions
-├── knowledge-base/              # Base de connaissances partagée
-│   ├── techniques.md
-│   ├── lessons-learned.md
-│   └── tool-cheatsheets/
-├── challenges/                  # Un dossier par challenge
-│   └── <challenge>/
-│       ├── notes.md
-│       ├── recon-report.md
-│       ├── exploit-log.md
-│       ├── flag.txt
-│       └── writeup.md
-└── retrospectives/              # Post-mortems
-    └── <date>-<challenge>.md
+├── knowledge-base/              # Mémoire : techniques.md, lessons-learned.md
+├── challenges/<challenge>/       # notes, recon-report, exploit-log, flag, writeup
+└── retrospectives/              # Post-mortems <date>-<challenge>.md
 ```
 
 ## Amélioration continue
