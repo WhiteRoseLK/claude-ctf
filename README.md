@@ -1,132 +1,83 @@
 # CTF Multi-Agent Workspace
 
-Workspace multi-agent pour résoudre des challenges CTF (HackTheBox, Root-Me) avec Claude Code.
+Workspace Claude Code pour résoudre des challenges CTF (HackTheBox, Root-Me, CTFd…).
+C'est une **couche d'orchestration + mémoire** par-dessus une suite de skills CTF vendorés :
+les agents orchestrent, les skills fournissent la technique, et chaque challenge alimente
+une knowledge base qui sert aux suivants.
 
 ## Prérequis
 
-### Claude Code
-- Claude Code installé (`npm install -g @anthropic-ai/claude-code`)
-- Plan **Max** recommandé (pour Opus + Agent Teams)
-- Node.js 18+ (pour les MCP servers)
+- **Claude Code** (`npm install -g @anthropic-ai/claude-code`), plan Max recommandé.
+- **Docker**, **Exegol** (environnement d'exécution des outils) et **Obsidian** (vault des writeups).
+  → `install.sh` les installe pour toi s'ils manquent (macOS/Linux).
 
-### Outils CTF (à installer sur ta machine)
-
-```bash
-# Debian/Ubuntu/Kali
-sudo apt update && sudo apt install -y \
-  nmap gobuster dirb nikto sqlmap hydra \
-  john hashcat netcat-openbsd curl wget \
-  python3 python3-pip exiftool binwalk \
-  smbclient enum4linux steghide
-
-# Python tools
-pip3 install pwntools
-
-# Wordlists (si pas déjà présentes)
-sudo apt install -y seclists wordlists
-```
-
-### MCP Git Server
-Le serveur MCP Git est configuré dans `.claude/settings.json` et sera installé automatiquement via `npx` au premier lancement.
+Les outils d'attaque (nmap, pwntools, ghidra, binwalk…) **ne s'installent pas sur l'hôte** :
+ils vivent dans Exegol.
 
 ## Setup
 
 ```bash
-# Cloner ce repo
-git clone <url> ctf-workspace
-cd ctf-workspace
-
-# Installer les skills + le CTF CLI (symlinks vers ~/.agents/skills et ~/.claude/ctf)
-./install.sh
-
-# Se connecter à une plateforme (token perso, jamais committé)
-#   via Claude Code : /ctf-connect htb <TOKEN>
-# Lancer Claude Code
-claude
+git clone https://github.com/WhiteRoseLK/claude-ctf.git
+cd claude-ctf
+./install.sh            # installe les deps + symlinke skills/ et le CLI (idempotent)
+claude                  # puis, dans Claude Code :  /ctf-connect htb <TOKEN>
 ```
 
-`install.sh` est **idempotent** et ne touche jamais à un `config.json` existant
-(ton token est préservé). Les secrets ne sont jamais versionnés (voir `.gitignore`).
+`install.sh` ne touche jamais à un `config.json`/token existant. Options : `--no-deps`, `--yes`.
+Les secrets (tokens, config plateforme) ne sont **jamais versionnés** (voir `.gitignore`).
 
-## Utilisation
+## Comment ça marche
 
-### Démarrer un challenge
-```
-> /ctf-start htb Keeper 10.10.11.227
-```
+- **Exécution dans Exegol.** Les commandes d'attaque tournent dans un conteneur dédié au
+  challenge (`challenges/<nom>/work/` monté sur `/workspace`). Un **hook** impose cette règle :
+  toute commande hors orchestration lancée sur l'hôte demande une acceptation expresse.
+- **Technique = skills.** `solve-challenge` (dispatcher) route vers `ctf-web`, `ctf-pwn`,
+  `ctf-reverse`, `ctf-crypto`, `ctf-forensics`, `ctf-malware`, `ctf-osint`, `ctf-misc`, `ctf-ai-ml`.
+  On ne duplique jamais une technique de skill dans le repo.
+- **Mémoire.** `knowledge-base/` (journal expérientiel) + `retrospectives/`, interrogés par
+  pertinence via `tools/kb-search/kb_search.py "<mots-clés>"` (TF-IDF, zéro dépendance).
+- **Writeups → vault Obsidian perso** `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md`,
+  jamais dans le repo partagé (gabarit : `templates/writeup-template.md`).
 
-### Lancer les agents manuellement
-```
-> Lance l'agent recon sur la cible
-> Lance l'agent exploit avec le rapport recon
-> Lance l'agent writeup pour documenter
-```
+## Workflow
 
-### Utiliser les Agent Teams (pour les challenges réseau)
-```
-> Crée une agent team avec 3 teammates :
-  - recon sur la cible 10.10.11.227
-  - exploit qui attend les résultats recon
-  - writeup qui observe et documente
-```
-
-### Faire la retrospective
-```
-> /ctf-retro Keeper
-```
+1. `/ctf-connect <plateforme> <token>` — se connecter (puis `/ctf-list`, `/ctf-solve` au besoin).
+2. `/ctf-start <plateforme> <challenge> [cible]` — structure le challenge, consulte la mémoire,
+   démarre le conteneur Exegol.
+3. **Recon** — l'agent `recon` charge `solve-challenge`, triage, produit `recon-report.md`
+   (avec la catégorie détectée). Aucune exploitation.
+4. **Exploit** — l'agent `exploit` charge le skill `ctf-<catégorie>`, attaque, logge tout dans
+   `exploit-log.md`, extrait le flag.
+5. `/ctf-submit <challenge> <flag>` — archive + soumet, puis propose writeup et rétro.
+6. **Writeup** (agent `writeup` → vault) puis `/ctf-retro <challenge>` (agent `review` →
+   met à jour la knowledge base).
 
 ## Structure
 
 ```
-ctf-workspace/
-├── CLAUDE.md                    # Instructions globales
-├── install.sh                   # Bootstrap (symlinks skills + CLI)
-├── skills/                      # Skills CTF vendorés (moteur technique)
-│   ├── solve-challenge/         #   dispatcher (triage + routage)
-│   ├── ctf-web/ ctf-pwn/ ...    #   références par catégorie
-│   └── ctf-connect/ ctf-submit/ #   intégration plateforme
-├── tools/ctf-cli/               # CTF CLI (connect/list/solve/submit)
-│   ├── ctf_cli.py
-│   └── config.example.json      #   template — config.json réelle gitignorée
+claude-ctf/
+├── CLAUDE.md                 # instructions du workspace
+├── install.sh                # bootstrap : deps + symlinks skills/CLI
+├── skills/                   # skills CTF vendorés (solve-challenge, ctf-*, intégration plateforme)
+├── tools/
+│   ├── ctf-cli/              # CLI plateforme (connect/list/solve/submit) + config.example.json
+│   ├── kb-search/            # recherche mémoire TF-IDF
+│   └── hooks/                # enforce_exegol.py (politique d'exécution)
+├── templates/                # gabarit de writeup (vault)
 ├── .claude/
-│   ├── agents/                  # recon, exploit, writeup, review
-│   ├── commands/                # ctf-start, ctf-submit, ctf-retro
-│   └── settings.json            # Config MCP + permissions
-├── knowledge-base/              # Mémoire : techniques.md, lessons-learned.md
-├── challenges/<challenge>/       # notes, recon-report, exploit-log, flag, writeup
-└── retrospectives/              # Post-mortems <date>-<challenge>.md
+│   ├── agents/               # recon, exploit, writeup, review
+│   ├── commands/             # ctf-start, ctf-submit, ctf-retro
+│   └── settings.json         # permissions, hook, MCP git
+├── knowledge-base/           # mémoire : techniques.md, lessons-learned.md
+├── challenges/<nom>/          # notes, recon-report, exploit-log, flag, cleanup.sh, work/ (gitignoré)
+└── retrospectives/           # post-mortems <date>-<challenge>.md
 ```
+
+> Writeups et fichiers de travail (`work/`) ne sont pas dans le repo : respectivement le
+> vault Obsidian et des fichiers temporaires nettoyés par `cleanup.sh`.
 
 ## Amélioration continue
 
-L'agent review met à jour automatiquement :
-- `knowledge-base/techniques.md` — nouvelles techniques apprises
-- `knowledge-base/lessons-learned.md` — erreurs à ne pas répéter
-- Les retrospectives permettent de suivre la progression dans le temps
-
-Au bout de quelques challenges, la knowledge base devient un vrai avantage compétitif :
-les agents consultent ces fichiers avant chaque action.
-
-## Ajouter un MCP Server (optionnel)
-
-Pour ajouter Brave Search (recherche web pendant les challenges) :
-
-```json
-// Dans .claude/settings.json > mcpServers
-"brave-search": {
-  "command": "npx",
-  "args": ["-y", "@anthropic-ai/mcp-server-brave-search"],
-  "env": {
-    "BRAVE_API_KEY": "ta-clé-api"
-  }
-}
-```
-
-Pour ajouter Playwright (interaction navigateur pour challenges web) :
-
-```json
-"playwright": {
-  "command": "npx",
-  "args": ["-y", "@anthropic-ai/mcp-server-playwright"]
-}
-```
+Après chaque challenge, `/ctf-retro` fait tourner l'agent `review` qui enrichit
+`knowledge-base/techniques.md`, `lessons-learned.md` et `retrospectives/`. Plus on joue,
+plus la mémoire sert — les agents la consultent (`kb-search`) avant chaque phase.
