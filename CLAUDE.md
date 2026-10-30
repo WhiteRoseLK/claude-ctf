@@ -84,8 +84,8 @@ challenges/<nom-challenge>/
 
 ## Environnement d'exécution — Exegol
 
-**Les agents orchestrent sur l'hôte macOS ; les outils CTF tournent dans un conteneur
-Exegol dédié au challenge** (c'est là que vivent nmap, pwntools, ghidra, binwalk, john…).
+**Les sous-agents recon/exploit pilotent depuis l'hôte macOS ; les outils CTF tournent dans
+un conteneur Exegol dédié au challenge** (c'est là que vivent nmap, pwntools, ghidra, binwalk, john…).
 L'hôte macOS n'a pas ces outils → ne pas lancer les commandes d'attaque directement dessus.
 
 > **Politique OBLIGATOIRE (appliquée par un hook `PreToolUse`)** : toute commande qui n'est
