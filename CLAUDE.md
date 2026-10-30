@@ -30,7 +30,7 @@ une technique de skill dans un agent ou dans la knowledge base.
 2. **Phase Recon** → agent recon charge `solve-challenge`, triage, produit `recon-report.md` avec la **catégorie détectée**
 3. **Phase Exploit** → agent exploit charge le skill `ctf-<catégorie>`, attaque, produit `exploit-log.md`
 4. **Soumission** → `/ctf-submit <challenge> <flag>` archive dans `flag.txt` et soumet à la plateforme
-5. **Writeup** → agent writeup génère `challenges/<challenge>/writeup.md`
+5. **Writeup** → agent writeup publie dans le **vault Obsidian** `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md` (via skill `ctf-writeup`), pas dans le repo
 6. **Retrospective** → `/ctf-retro <challenge>` lance l'agent review (met à jour la knowledge base)
 
 ## Conventions obligatoires
@@ -60,18 +60,49 @@ challenges/<nom-challenge>/
 ├── recon-report.md     # Rapport de reconnaissance structuré
 ├── exploit-log.md      # Journal chronologique des tentatives
 ├── flag.txt            # Le flag extrait
-├── writeup.md          # Writeup final
-├── cleanup.sh          # Script de nettoyage (supprime work/)
+├── cleanup.sh          # Script de nettoyage (supprime work/, stoppe le conteneur Exegol)
 ├── .gitignore          # Ignore work/
-└── work/               # Fichiers de travail temporaires (zips, binaires, extractions)
+└── work/               # Fichiers de travail temporaires (montés dans Exegol sur /workspace)
                         # → NON commités, supprimés par cleanup.sh après le challenge
 ```
 
-## Outils disponibles
+> **Writeup** : publié dans le vault Obsidian perso `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md`,
+> **jamais** dans le repo (gitignoré). Le repo partagé garde KB + rétros comme mémoire.
 
-Les outils CLI suivants sont attendus sur le système :
-nmap, gobuster, dirb, nikto, sqlmap, hydra, john, hashcat,
-burpsuite, curl, wget, netcat, python3, pwntools, linpeas,
-winpeas, searchsploit, msfconsole
+## Environnement d'exécution — Exegol
 
-Si un outil manque, le signaler plutôt que d'improviser.
+**Les agents orchestrent sur l'hôte macOS ; les outils CTF tournent dans un conteneur
+Exegol dédié au challenge** (c'est là que vivent nmap, pwntools, ghidra, binwalk, john…).
+L'hôte macOS n'a pas ces outils → ne pas lancer les commandes d'attaque directement dessus.
+
+### Cycle de vie du conteneur (un par challenge)
+
+```bash
+# Démarrage (fait par /ctf-start) — work/ monté sur /workspace
+exegol start "ctf-<nom>" free \
+  --workspace "$(pwd)/challenges/<nom>/work" \
+  --disable-X11 -s bash
+# + --vpn ~/htb.ovpn  si le challenge a une cible réseau HTB (sinon omettre)
+
+# Vérifier
+docker ps --filter "name=ctf-<nom>" --format "{{.Names}}\t{{.Status}}"
+```
+
+Si `exegol start` échoue sur « Unable to connect to docker » : `open -a Docker` puis
+`until docker info >/dev/null 2>&1; do sleep 3; done` avant de réessayer.
+
+### Lancer une commande dans le conteneur
+
+Le nom Docker réel est `exegol-ctf-<nom>`. Aucun `exegol-mcp` n'est configuré → on passe par :
+
+```bash
+docker exec exegol-ctf-<nom> bash -c "cd /workspace && <commande>"
+```
+
+Écrire un fichier pour le conteneur : l'écrire dans `challenges/<nom>/work/` (monté sur
+`/workspace`). En fin de challenge, `cleanup.sh` stoppe le conteneur et supprime `work/`.
+
+### Apple Silicon
+Conteneur aarch64 + binaire x86 → `qemu-user-static` (`qemu-x86_64-static -L <sysroot> ./bin`),
+**uniquement pour valider la logique** ; revérifier toute adresse de gadget avec `ropper`/`ROPgadget`
+sur le vrai binaire. (détails : skill `ctf-pwn`)

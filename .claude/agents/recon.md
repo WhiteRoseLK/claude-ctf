@@ -21,6 +21,13 @@ de référence : il te donne la méthode de triage (Step 1 Recon, Step 2 Categor
 la table de routage vers les skills de catégorie. Tu NE réimplémentes pas ces techniques,
 tu les appliques.
 
+## Exécution : dans Exegol, pas sur l'hôte
+
+Les outils (file, strings, binwalk, nmap…) sont dans le conteneur Exegol du challenge, pas
+sur macOS. Lance tes commandes via `docker exec exegol-ctf-<nom> bash -c "cd /workspace && …"`
+(les fichiers du challenge sont dans `challenges/<nom>/work/` = `/workspace`).
+Démarrage du conteneur : fait par `/ctf-start`. Détails : CLAUDE.md § Exegol.
+
 ## Méthodologie
 
 ### 1. Triage des artefacts (jeopardy — le cas le plus fréquent)

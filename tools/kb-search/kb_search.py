@@ -2,8 +2,9 @@
 """Recherche de pertinence dans la mémoire CTF (knowledge base + writeups).
 
 Brique de récupération (le « retrieval » d'un RAG), en Python stdlib pur :
-indexe les entrées de knowledge-base/*.md et challenges/*/writeup.md, découpées
+indexe les entrées de knowledge-base/*.md et retrospectives/*.md, découpées
 par titres markdown, puis classe par similarité TF-IDF avec la requête.
+(Les writeups sont dans le vault Obsidian perso, hors repo — non indexés.)
 
 Zéro dépendance externe — volontaire (repo partagé, « commencer simple »). Le jour
 où le corpus grossit, le scoring lexical peut être remplacé par des embeddings
@@ -39,9 +40,9 @@ def tokenize(text: str) -> list[str]:
 
 def iter_source_files() -> list[str]:
     """Fichiers de mémoire à indexer, relatifs à la racine du repo."""
+    # Les writeups vivent dans le vault Obsidian perso (hors repo), pas indexés ici.
     patterns = [
         "knowledge-base/*.md",
-        "challenges/*/writeup.md",
         "retrospectives/*.md",
     ]
     files: list[str] = []
