@@ -24,14 +24,27 @@ Les techniques CTF viennent des skills vendorés dans `skills/` (installés via 
 **Les agents orchestrent, les skills fournissent la technique.** On ne duplique jamais
 une technique de skill dans un agent ou dans la knowledge base.
 
-## Workflow standard
+## Rôle de l'agent principal — ORCHESTRATEUR (il ne résout pas)
 
-1. Initialiser le challenge avec `/ctf-start <plateforme> <challenge>`
-2. **Phase Recon** → agent recon charge `solve-challenge`, triage, produit `recon-report.md` avec la **catégorie détectée**
-3. **Phase Exploit** → agent exploit charge le skill `ctf-<catégorie>`, attaque, produit `exploit-log.md`
-4. **Soumission** → `/ctf-submit <challenge> <flag>` archive dans `flag.txt` et soumet à la plateforme
-5. **Writeup** → agent writeup publie dans le **vault Obsidian** `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md` (via skill `ctf-writeup`), pas dans le repo
-6. **Retrospective** → `/ctf-retro <challenge>` lance l'agent review (met à jour la knowledge base)
+L'agent principal **orchestre, il ne résout jamais lui-même**. Il écoute l'utilisateur et délègue :
+
+- Il **lance les sous-agents** `recon` puis `exploit` (spécialisés par catégorie via le skill
+  `ctf-<catégorie>`) sur chaque challenge, chacun travaillant dans le **conteneur Exegol du challenge**.
+- **Plusieurs challenges = plusieurs sous-agents en parallèle.** L'orchestrateur supervise et
+  **reste disponible** pour de nouvelles instructions de l'utilisateur (lancer d'autres agents, autre chose).
+- Il ne lance **JAMAIS** lui-même une commande de recon/exploitation (pas de `docker exec` d'outils,
+  pas de solveur inline, pas d'analyse de binaire). Si l'envie de « juste résoudre » surgit : **déléguer**.
+- Il ne garde en propre que : l'init (`/ctf-start`), la **soumission** (`/ctf-submit`), et le
+  **déclenchement** des sous-agents `writeup` et `review`.
+
+## Workflow standard (tout est délégué par l'orchestrateur)
+
+1. **Init** → l'orchestrateur lance `/ctf-start <plateforme> <challenge>` (structure, mémoire, conteneur Exegol)
+2. **Phase Recon** → l'orchestrateur **délègue au sous-agent `recon`** : charge `solve-challenge`, triage, produit `recon-report.md` avec la **catégorie détectée**
+3. **Phase Exploit** → l'orchestrateur **délègue au sous-agent `exploit`** : charge le skill `ctf-<catégorie>`, attaque dans le conteneur Exegol, produit `exploit-log.md` + `flag.txt`
+4. **Soumission** → l'orchestrateur lance `/ctf-submit <challenge> <flag>` (archive + soumet)
+5. **Writeup** → l'orchestrateur **délègue au sous-agent `writeup`** → vault Obsidian `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md` (via skill `ctf-writeup`), pas dans le repo
+6. **Retrospective** → l'orchestrateur lance `/ctf-retro <challenge>` → **sous-agent `review`** (met à jour la knowledge base)
 
 ## Conventions obligatoires
 
