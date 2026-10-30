@@ -75,6 +75,11 @@ challenges/<nom-challenge>/
 Exegol dédié au challenge** (c'est là que vivent nmap, pwntools, ghidra, binwalk, john…).
 L'hôte macOS n'a pas ces outils → ne pas lancer les commandes d'attaque directement dessus.
 
+> **Politique OBLIGATOIRE (appliquée par un hook `PreToolUse`)** : toute commande qui n'est
+> pas de l'orchestration (git, docker, exegol, outils du repo) ni un `docker exec exegol-ctf-*`
+> déclenche une demande d'acceptation expresse. Par défaut : exécuter dans Exegol.
+> Hook : `tools/hooks/enforce_exegol.py`.
+
 ### Cycle de vie du conteneur (un par challenge)
 
 ```bash

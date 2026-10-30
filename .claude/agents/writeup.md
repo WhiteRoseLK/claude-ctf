@@ -19,6 +19,11 @@ Les writeups vivent dans le vault Obsidian `~/Documents/CTF/CTF/`, jamais dans l
 partagé. **Charge le skill `ctf-writeup`** (outil Skill) : il fixe le chemin de sortie
 (`~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md`) et le style.
 
+**OBLIGATOIRE** — tout challenge résolu DOIT avoir son writeup dans le vault. Pars du
+gabarit `templates/writeup-template.md` du repo. Catégorie ∈ { Reversing, Web, Crypto,
+Pwn, Forensics, Misc, OSINT, Malware, Hardware, Blockchain } (dossiers déjà créés dans
+le vault ; ICS/EtherNet-IP → Misc, RE → Reversing). N'écris JAMAIS un writeup ailleurs.
+
 Format d'entête du vault (callout Obsidian) :
 ```markdown
 > [!info] Challenge Summary

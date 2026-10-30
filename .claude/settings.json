@@ -1,39 +1,47 @@
 {
   "permissions": {
     "allow": [
-      "Bash(nmap*)",
-      "Bash(gobuster*)",
-      "Bash(dirb*)",
-      "Bash(nikto*)",
-      "Bash(curl*)",
-      "Bash(wget*)",
-      "Bash(python3*)",
-      "Bash(searchsploit*)",
-      "Bash(nc*)",
-      "Bash(netcat*)",
       "Bash(git*)",
-      "Bash(cat*)",
+      "Bash(gh*)",
+      "Bash(docker*)",
+      "Bash(exegol*)",
+      "Bash(pipx*)",
+      "Bash(brew*)",
+      "Bash(cd*)",
       "Bash(ls*)",
-      "Bash(find*)",
+      "Bash(cat*)",
+      "Bash(head*)",
+      "Bash(tail*)",
       "Bash(grep*)",
+      "Bash(find*)",
       "Bash(echo*)",
       "Bash(mkdir*)",
       "Bash(cp*)",
       "Bash(mv*)",
       "Bash(chmod*)",
-      "Bash(head*)",
-      "Bash(tail*)",
       "Bash(wc*)",
       "Bash(sort*)",
       "Bash(uniq*)",
-      "Bash(base64*)",
-      "Bash(xxd*)",
-      "Bash(file*)",
-      "Bash(strings*)",
-      "Bash(binwalk*)",
-      "Bash(exiftool*)"
+      "Bash(python3 tools/*)",
+      "Bash(python3 ~/.claude/ctf/*)",
+      "Bash(./install.sh*)",
+      "Bash(docker exec exegol-ctf-*)"
     ],
     "deny": []
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$CLAUDE_PROJECT_DIR/tools/hooks/enforce_exegol.py\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
   },
   "env": {
     "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1"
