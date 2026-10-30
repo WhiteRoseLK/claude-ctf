@@ -36,12 +36,15 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
 4. **Démarrer le conteneur Exegol** (environnement d'exécution — cf. CLAUDE.md § Exegol) :
    ```bash
    docker info >/dev/null 2>&1 || { open -a Docker; until docker info >/dev/null 2>&1; do sleep 3; done; }
-   exegol start "ctf-<nom>" free \
+   # --offline --accept-eula : indispensable, sinon Exegol bloque sur un prompt interactif
+   exegol start "ctf-<nom>" free --offline --accept-eula \
      --workspace "$(pwd)/challenges/<nom>/work" --disable-X11 -s bash
    # ajouter  --vpn ~/htb.ovpn  si cible réseau HTB
+   # l'erreur « cannot attach stdin to a TTY » est normale : le conteneur tourne quand même
    docker ps --filter "name=ctf-<nom>" --format "{{.Names}}\t{{.Status}}"
    ```
-   Générer `cleanup.sh` qui fait `exegol stop "ctf-<nom>"` puis `rm -rf work/`.
+   Générer `cleanup.sh` qui fait `docker rm -f exegol-ctf-<nom>` (pas `exegol stop`, qui bute
+   sur le prompt de MAJ) puis `rm -rf work/`.
 
 5. **Commit git** : `[init] <challenge-name>: initialisation du challenge`
 
