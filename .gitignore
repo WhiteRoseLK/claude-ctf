@@ -17,5 +17,8 @@ __pycache__/
 # Fichiers de travail par challenge (binaires, extractions, zips)
 challenges/*/work/
 
+# Writeups = vault Obsidian perso (~/Documents/CTF/CTF/...), pas dans le repo partagé
+challenges/*/writeup.md
+
 # === OS ===
 .DS_Store
