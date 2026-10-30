@@ -60,7 +60,7 @@ challenges/<nom-challenge>/
 ├── recon-report.md     # Rapport de reconnaissance structuré
 ├── exploit-log.md      # Journal chronologique des tentatives
 ├── flag.txt            # Le flag extrait
-├── cleanup.sh          # Script de nettoyage (supprime work/, stoppe le conteneur Exegol)
+├── cleanup.sh          # Script de nettoyage (supprime le conteneur Exegol et work/)
 ├── .gitignore          # Ignore work/
 └── work/               # Fichiers de travail temporaires (montés dans Exegol sur /workspace)
                         # → NON commités, supprimés par cleanup.sh après le challenge
@@ -84,7 +84,9 @@ L'hôte macOS n'a pas ces outils → ne pas lancer les commandes d'attaque direc
 
 ```bash
 # Démarrage (fait par /ctf-start) — work/ monté sur /workspace
-exegol start "ctf-<nom>" free \
+# --offline --accept-eula : évite les prompts interactifs d'Exegol (notice de MAJ, EULA)
+#   qui bloqueraient l'automatisation. Image : toujours `free` (les autres sont payantes).
+exegol start "ctf-<nom>" free --offline --accept-eula \
   --workspace "$(pwd)/challenges/<nom>/work" \
   --disable-X11 -s bash
 # + --vpn ~/htb.ovpn  si le challenge a une cible réseau HTB (sinon omettre)
@@ -93,8 +95,15 @@ exegol start "ctf-<nom>" free \
 docker ps --filter "name=ctf-<nom>" --format "{{.Names}}\t{{.Status}}"
 ```
 
+En non-interactif, `exegol start` affiche « cannot attach stdin to a TTY-enabled container » :
+c'est **sans conséquence**, le conteneur est créé et tourne — on interagit via `docker exec`.
 Si `exegol start` échoue sur « Unable to connect to docker » : `open -a Docker` puis
 `until docker info >/dev/null 2>&1; do sleep 3; done` avant de réessayer.
+
+**Image `free` uniquement** (les images `full`/`ad` sont payantes). Si un outil manque du
+conteneur (ex. binwalk, ghidra, john), l'installer dedans à la volée
+(`docker exec exegol-ctf-<nom> bash -c "apt-get install -y <pkg> || pipx install <pkg>"`)
+ou le réimplémenter en Python — **ne pas changer d'image**.
 
 ### Lancer une commande dans le conteneur
 
@@ -105,7 +114,9 @@ docker exec exegol-ctf-<nom> bash -c "cd /workspace && <commande>"
 ```
 
 Écrire un fichier pour le conteneur : l'écrire dans `challenges/<nom>/work/` (monté sur
-`/workspace`). En fin de challenge, `cleanup.sh` stoppe le conteneur et supprime `work/`.
+`/workspace`). En fin de challenge, `cleanup.sh` supprime le conteneur via
+`docker rm -f exegol-ctf-<nom>` (fiable, sans prompt — `exegol stop/remove` bute sur le
+prompt de MAJ) puis supprime `work/`.
 
 ### Apple Silicon
 Conteneur aarch64 + binaire x86 → `qemu-user-static` (`qemu-x86_64-static -L <sysroot> ./bin`),
