@@ -1,115 +1,78 @@
-# Techniques CTF — Knowledge Base
+# Techniques éprouvées — Knowledge Base
 
-> Ce fichier est mis à jour automatiquement par l'agent review après chaque challenge.
-> Consulter AVANT chaque phase de recon et d'exploit.
+> **Journal expérientiel**, pas une encyclopédie. Les techniques génériques vivent dans
+> les skills `ctf-*` (`skills/`). Ici on consigne UNIQUEMENT ce qu'on a réellement
+> appliqué sur un challenge : le piège clé, l'astuce qui a débloqué, et le skill à charger.
+> Mis à jour par l'agent `review` / `/ctf-retro` après chaque challenge.
+> **Consulter avant chaque recon et exploit.**
 
----
-
-## Web
-
-### SQL Injection
-- **Détection** : ajouter `'`, `"`, `1 OR 1=1` dans les champs de saisie et paramètres URL
-- **Outils** : `sqlmap -u "<url>" --dbs`, `sqlmap --forms`
-- **Bypass auth** : `' OR '1'='1' --`, `admin'--`
-- **Quand l'utiliser** : formulaires de login, paramètres GET/POST, headers
-- **Challenges résolus** : _(à compléter)_
-
-### XSS (Cross-Site Scripting)
-- **Détection** : injecter `<script>alert(1)</script>` dans les champs
-- **Types** : Reflected, Stored, DOM-based
-- **Payloads utiles** : `<img src=x onerror=alert(1)>`, `<svg onload=alert(1)>`
-- **Quand l'utiliser** : champs affichés dans la page, commentaires, profils
-- **Challenges résolus** : _(à compléter)_
-
-### Directory Traversal / LFI
-- **Payloads** : `../../../etc/passwd`, `....//....//etc/passwd`
-- **Wrappers PHP** : `php://filter/convert.base64-encode/resource=index.php`
-- **Outils** : `gobuster dir -u <url> -w <wordlist>`
-- **Challenges résolus** : _(à compléter)_
-
-### Command Injection
-- **Détection** : `;id`, `|id`, `$(id)`, `` `id` ``
-- **Bypass** : `${IFS}` pour les espaces, `\n` pour newlines
-- **Challenges résolus** : _(à compléter)_
+Format d'une entrée :
+- **Technique** — nom court
+- **Catégorie / skill** — quel skill `ctf-*` couvre le détail
+- **Challenge(s)** — où ça a servi
+- **Insight clé** — le truc non évident qui a fait gagner (ou perdre) du temps
+- **Approche** — commande / méthode condensée
 
 ---
 
-## Réseau
+## Reverse Engineering
 
-### Scan & Énumération
-- **Scan rapide** : `nmap -sC -sV -T4 <target>`
-- **Scan complet** : `nmap -p- -sV <target>`
-- **Scan UDP** : `nmap -sU --top-ports 100 <target>`
-- **Web discovery** : `gobuster dir -u <url> -w /usr/share/wordlists/dirb/common.txt`
+### Extraction statique de flag/mot de passe en clair (`.rodata` / `.data`)
+- **Catégorie / skill** : reverse → `ctf-reverse`
+- **Challenge(s)** : SpookyPass (HTB)
+- **Insight clé** : sur un binaire **not stripped** et non obfusqué, le flag peut être un
+  tableau d'`int32` dans `.data` (un entier = un caractère ASCII), reconstruit par une
+  boucle `buffer[i] = (char)parts[i]`. Inutile d'exécuter : `strings` + parsing des sections suffit.
+- **Approche** : `file`, `strings`, `nm` pour repérer les symboles (`main`, `parts`) → parser
+  `.data` à l'offset fichier pour lire le tableau. Sur macOS, pas d'`objdump`/`gdb` ELF :
+  parsing ELF + désassemblage via **Python (pwntools/capstone)**.
 
-### SMB
-- **Énumération** : `enum4linux -a <target>`, `smbclient -L //<target>/`
-- **Accès** : `smbclient //<target>/<share>`, `smbmap -H <target>`
-- **Quand l'utiliser** : port 139/445 ouvert
+### Déchiffrement d'un PCK Godot (FileAccessEncrypted) — attention au mode AES
+- **Catégorie / skill** : reverse + crypto → `ctf-reverse`, `ctf-crypto`
+- **Challenge(s)** : GameLoader (HTB)
+- **Insight clé** : Godot chiffre le PCK en **AES-256-ECB** par défaut, MAIS un challenge peut
+  avoir **patché le template** pour utiliser **CFB avec un IV de 16 octets** inséré après
+  `MD5(16) + plaintext_size(8)`. Un brute-force de clé qui valide avec le *mauvais mode*
+  échoue toujours → **toujours confirmer le mode en reversant `open_and_parse` avant de bruteforcer**.
+- **Approche** : localiser la clé via le pointeur global dans `.data` (suivre le `mov r14, [rip+...]`
+  qui référence la clé lors du check magique `GDPC`). Puis `AES.new(key, MODE_CFB, iv, segment_size=128)`,
+  vérifier via le MD5 du répertoire. Décompilation : **GDRETools / gdsdecomp**.
 
-### FTP
-- **Anonymous** : `ftp <target>` → user: anonymous, pass: (vide)
-- **Quand l'utiliser** : port 21 ouvert
-
----
-
-## Privilege Escalation — Linux
-
-### Énumération
-- **Auto** : `linpeas.sh`, `linenum.sh`
-- **Manuel** : `sudo -l`, `find / -perm -4000 2>/dev/null` (SUID)
-- **Cron** : `cat /etc/crontab`, `ls -la /etc/cron.*`
-- **Capabilities** : `getcap -r / 2>/dev/null`
-
-### Techniques courantes
-- **Sudo mal configuré** : GTFOBins pour chaque binaire avec `sudo -l`
-- **SUID** : GTFOBins, race conditions
-- **Kernel exploit** : `uname -r` puis `searchsploit linux kernel <version>`
-- **Wildcard injection** : dans tar, chown, etc. via cron
-- **PATH hijacking** : modifier PATH pour intercepter un binaire appelé par root
+### Déobfuscation GDScript (tableaux d'entiers → base64 → texte)
+- **Catégorie / skill** : malware → `ctf-malware`
+- **Challenge(s)** : GameLoader (HTB) — flag en 2 parties concaténées
+- **Insight clé** : l'obfuscation = variables à noms aléatoires contenant des tableaux
+  d'entiers (mix décimal/hex/binaire), assemblés en chaîne puis décodés base64. Le flag
+  et les IOC (domaine C2, chemin de payload) sont tous encodés pareil. Reconstituer les
+  concaténations de variables (`loap = zbxp + qiro`) avant de décoder.
+- **Approche** : extraire chaque tableau → `''.join(chr(c))` → `base64.b64decode`.
 
 ---
 
-## Privilege Escalation — Windows
+## ICS / Systèmes industriels
 
-### Énumération
-- **Auto** : `winpeas.exe`, `PowerUp.ps1`
-- **Manuel** : `whoami /priv`, `net user`, `systeminfo`
-
-### Techniques courantes
-- **SeImpersonatePrivilege** : Juicy/Rogue Potato
-- **Services mal configurés** : `sc qc <service>`, binpath modifiable
-- **Unquoted service paths**
-- **AlwaysInstallElevated**
-
----
-
-## Crypto
-
-### Bases
-- **Identification** : CyberChef, `file`, `xxd`, entropie
-- **Base64** : `echo "<str>" | base64 -d`
-- **Hashes** : `hashid <hash>`, `hashcat -m <mode> <hash> <wordlist>`
-- **John** : `john --wordlist=rockyou.txt <hash-file>`
-
-### RSA
-- **Petits facteurs** : factordb.com
-- **Wiener attack** : si e est très grand
-- **Common modulus** : si même n avec différents e
+### Lecture non authentifiée de tag EtherNet/IP (CIP)
+- **Catégorie / skill** : misc/réseau industriel → `ctf-misc` (+ recherche CVE)
+- **Challenge(s)** : EtherTag (HTB) — Allen-Bradley 1756-L61/B
+- **Insight clé** : EtherNet/IP v1/v2 **n'a aucune authentification** (CIP Security seulement
+  en v3.21+). Le flag était dans un tag `flag` (INT[100], 1 entier = 1 caractère ASCII),
+  lisible via service CIP **ReadTag (0x4c)**. Réf : CVE-2012-6435, ICSA-12-146-01.
+- **Approche** : `Register Session (0x65)` → `SendRRData (0x6f)` + ReadTag avec path ANSI
+  Extended Symbolic `\x91\x04flag\x00`, count=100. Outil dédié : **pycomm3** / **cpppo**
+  (`CIPDriver(ip).get_tag_list()`), mais ici fait à la main en sockets Python.
+- **Fingerprint** : `List Identity (0x63)` donne vendor/device/révision du PLC.
 
 ---
 
-## Forensics / Stéganographie
+## Méta / environnement
 
-### Analyse de fichiers
-- **Type** : `file <fichier>`, `binwalk <fichier>`
-- **Strings** : `strings <fichier>`, `strings -e l <fichier>` (UTF-16)
-- **Metadata** : `exiftool <fichier>`
-
-### Images
-- **Stégo** : `steghide extract -sf <image>`, `zsteg <png>`
-- **LSB** : scripts Python avec PIL
+### macOS sans outils Linux natifs → sockets & parsing Python
+- **Challenge(s)** : SpookyPass, EtherTag, GameLoader
+- **Insight clé** : sur ce poste macOS, `nmap`, `objdump` ELF, `gdb` ne sont pas dispo.
+  Ne pas bloquer : **réimplémenter en Python** (parsing ELF/PE, sockets bruts pour
+  EtherNet/IP, capstone pour le désassemblage). Toujours vérifier la dispo d'un outil
+  avant de baser un plan dessus.
 
 ---
 
-_Dernière mise à jour : à initialiser après le premier challenge_
+_Dernière mise à jour : 2026-10-30 (backfill SpookyPass, EtherTag, GameLoader)_
