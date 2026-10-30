@@ -9,8 +9,8 @@ une knowledge base qui sert aux suivants.
 
 - **Claude Code** (`npm install -g @anthropic-ai/claude-code`), plan Max recommandé.
 - **Docker**, **Exegol** (environnement d'exécution des outils) et **Obsidian** (vault des writeups).
-  → `install.sh` tente d'installer ce qui manque : via Homebrew sur macOS, via apt/pipx sur Linux.
-  Sur Linux, Obsidian (appli GUI) reste à installer à la main (AppImage/flatpak).
+  → `install.sh` tente d'installer ce qui manque (Homebrew sur macOS ; sur Linux : pipx pour
+  Exegol, script officiel pour Docker). Sur Linux, Obsidian (appli GUI) reste manuel (AppImage/flatpak).
 
 Les outils d'attaque (nmap, pwntools, ghidra, binwalk…) **ne s'installent pas sur l'hôte** :
 ils vivent dans Exegol.
