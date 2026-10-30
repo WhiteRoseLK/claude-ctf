@@ -9,7 +9,8 @@ une knowledge base qui sert aux suivants.
 
 - **Claude Code** (`npm install -g @anthropic-ai/claude-code`), plan Max recommandé.
 - **Docker**, **Exegol** (environnement d'exécution des outils) et **Obsidian** (vault des writeups).
-  → `install.sh` les installe pour toi s'ils manquent (macOS/Linux).
+  → `install.sh` tente d'installer ce qui manque : via Homebrew sur macOS, via apt/pipx sur Linux.
+  Sur Linux, Obsidian (appli GUI) reste à installer à la main (AppImage/flatpak).
 
 Les outils d'attaque (nmap, pwntools, ghidra, binwalk…) **ne s'installent pas sur l'hôte** :
 ils vivent dans Exegol.
@@ -52,6 +53,9 @@ Les secrets (tokens, config plateforme) ne sont **jamais versionnés** (voir `.g
 6. **Writeup** (agent `writeup` → vault) puis `/ctf-retro <challenge>` (agent `review` →
    met à jour la knowledge base).
 
+> Pour un challenge réseau, `/ctf-start` peut proposer des **Agent Teams** (recon + exploit en
+> parallèle) — activées via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` dans `.claude/settings.json`.
+
 ## Structure
 
 ```
@@ -60,7 +64,7 @@ claude-ctf/
 ├── install.sh                # bootstrap : deps + symlinks skills/CLI
 ├── skills/                   # skills CTF vendorés (solve-challenge, ctf-*, intégration plateforme)
 ├── tools/
-│   ├── ctf-cli/              # CLI plateforme (connect/list/solve/submit) + config.example.json
+│   ├── ctf-cli/              # CLI plateforme : ctf_cli.py + sudocrypt_cli.py + config.example.json
 │   ├── kb-search/            # recherche mémoire TF-IDF
 │   └── hooks/                # enforce_exegol.py (politique d'exécution)
 ├── templates/                # gabarit de writeup (vault)
@@ -72,9 +76,6 @@ claude-ctf/
 ├── challenges/<nom>/          # notes, recon-report, exploit-log, flag, cleanup.sh, work/ (gitignoré)
 └── retrospectives/           # post-mortems <date>-<challenge>.md
 ```
-
-> Writeups et fichiers de travail (`work/`) ne sont pas dans le repo : respectivement le
-> vault Obsidian et des fichiers temporaires nettoyés par `cleanup.sh`.
 
 ## Amélioration continue
 
