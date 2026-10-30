@@ -60,7 +60,7 @@ challenges/<nom-challenge>/
 ├── recon-report.md     # Rapport de reconnaissance structuré
 ├── exploit-log.md      # Journal chronologique des tentatives
 ├── flag.txt            # Le flag extrait
-├── cleanup.sh          # Script de nettoyage (supprime work/, stoppe le conteneur Exegol)
+├── cleanup.sh          # Script de nettoyage (supprime le conteneur Exegol et work/)
 ├── .gitignore          # Ignore work/
 └── work/               # Fichiers de travail temporaires (montés dans Exegol sur /workspace)
                         # → NON commités, supprimés par cleanup.sh après le challenge
@@ -91,7 +91,7 @@ exegol start "ctf-<nom>" free --offline --accept-eula \
   --disable-X11 -s bash
 # + --vpn ~/htb.ovpn  si le challenge a une cible réseau HTB (sinon omettre)
 
-# Vérifier (le conteneur reste up même si l'attach du shell échoue — normal en non-interactif)
+# Vérifier
 docker ps --filter "name=ctf-<nom>" --format "{{.Names}}\t{{.Status}}"
 ```
 

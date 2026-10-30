@@ -13,7 +13,7 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
    ├── recon-report.md
    ├── exploit-log.md
    ├── flag.txt
-   ├── cleanup.sh       # stoppe le conteneur Exegol + supprime work/
+   ├── cleanup.sh       # supprime le conteneur Exegol (docker rm -f) + work/
    ├── .gitignore       # ignore work/
    └── work/            # fichiers du challenge (monté sur /workspace dans Exegol)
    ```
