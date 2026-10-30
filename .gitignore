@@ -1,0 +1,21 @@
+# === Secrets — ne JAMAIS committer (repo partagé) ===
+# Config plateforme avec tokens/cookies de session
+tools/ctf-cli/config.json
+tools/ctf-cli/sudocrypt_config.json
+tools/ctf-cli/docker_instances.json
+# Garde-fou générique
+*token*
+*secret*
+*.session
+
+# === Données de travail lourdes / volatiles ===
+# Workspace du CTF CLI (challenges téléchargés, plusieurs Go)
+tools/ctf-cli/workspace/
+__pycache__/
+*.pyc
+
+# Fichiers de travail par challenge (binaires, extractions, zips)
+challenges/*/work/
+
+# === OS ===
+.DS_Store

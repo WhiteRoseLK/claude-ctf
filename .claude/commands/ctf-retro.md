@@ -1,0 +1,20 @@
+Lance la rétrospective et l'amélioration continue après un challenge.
+
+Argument attendu : `<nom-du-challenge>`
+Exemple : `/ctf-retro GameLoader`
+
+## Actions à réaliser
+
+1. **Vérifier** que `challenges/$ARGUMENTS/` existe et contient au minimum
+   `recon-report.md` et `exploit-log.md`. Sinon, signaler ce qui manque et s'arrêter.
+
+2. **Lancer l'agent `review`** (subagent) sur ce challenge. Il doit :
+   - analyser recon-report.md, exploit-log.md, writeup.md
+   - mettre à jour `knowledge-base/techniques.md` (nouvelles techniques réellement utilisées)
+   - mettre à jour `knowledge-base/lessons-learned.md` (erreurs et règles)
+   - générer `retrospectives/YYYY-MM-DD-$ARGUMENTS.md`
+
+3. **Vérifier le résultat** : confirmer que la KB et `retrospectives/` ont bien été
+   modifiés (ne pas se contenter de la parole de l'agent — vérifier les fichiers).
+
+4. **Commit git** : `[retro] $ARGUMENTS: rétrospective et mise à jour knowledge base`
