@@ -34,16 +34,33 @@ Format : **Date** / **Challenge** — **Problème** → **Cause** → **Solution
 - **Solution** : sur un binaire non strippé, lire `.rodata`/`.data` en premier (`strings`, `nm`).
 - **Règle** : **commencer par l'analyse statique la moins coûteuse** ; l'exécution/patch est un recours, pas un réflexe.
 
+### 2026-10-30 — NoiseCodex
+- **Problème** : un LLL réimplémenté en pur-Python (`Fraction`) a dépassé 120 s sur une base de
+  dim 11 avec des entiers de 3072 bits ; le solveur fpylll a ensuite résolu en 0,05 s.
+- **Cause** : l'image Exegol `free` n'a pas fpylll/sage/pip, et on a appliqué à la lettre la règle
+  « réimplémenter en Python » (EtherTag). Or le LLL recalculait tout le Gram-Schmidt à chaque
+  étape sur des rationnels énormes. Pourtant `apt` fonctionnait dans le conteneur.
+- **Solution** : `docker exec exegol-ctf-<nom> apt-get install -y python3-fpylll`.
+- **Règle** : **si l'outil est installable (apt/pip) dans le conteneur, l'installer plutôt que de
+  le réimplémenter.** Réimplémenter n'est valable que pour du simple (protocole, parsing), pas
+  pour du calcul lourd (LLL, factorisation, Gröbner). Tester `apt-get install` en premier (1 min).
+- **Process** : `recon-report.md` a été laissé vide (« à compléter ») car le triage était rapide.
+  **Remplir recon-report.md même si le triage est court** (artefacts, analyse de la source,
+  hypothèse de vecteur) : sert à l'agent exploit et à la rétro.
+
 ---
 
 ## Règles accumulées (consultation rapide)
 
 1. Confirmer le mode/format de chiffrement par reverse **avant** tout brute-force (GameLoader).
-2. Vérifier la dispo d'un outil avant d'en dépendre ; sinon réimplémenter en Python (EtherTag).
+2. Vérifier la dispo d'un outil avant d'en dépendre ; sinon l'**installer** dans le conteneur
+   (`apt install`, NoiseCodex), et ne réimplémenter en Python que le simple (protocole, parsing : EtherTag).
 3. Analyse statique la moins coûteuse d'abord ; exécution/patch en recours (SpookyPass).
 4. Un flag est souvent un tableau d'entiers (1 entier = 1 char ASCII) : vérifier `.data` / les tags.
 5. Toujours charger le skill `ctf-<catégorie>` avant d'attaquer — ne pas réinventer la technique.
+6. Pas de LLL/calcul lourd en pur-Python : installer fpylll/sage (`apt install python3-fpylll`) (NoiseCodex).
+7. Remplir `recon-report.md` même quand le triage est rapide (NoiseCodex).
 
 ---
 
-_Dernière mise à jour : 2026-10-30 (backfill des 3 premiers challenges)_
+_Dernière mise à jour : 2026-10-30 (NoiseCodex)_
