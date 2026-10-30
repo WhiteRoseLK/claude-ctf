@@ -49,6 +49,28 @@ Format d'une entrée :
 
 ---
 
+## Crypto
+
+### Approximate-GCD (ACD) par SDA + LLL
+- **Catégorie / skill** : crypto → `ctf-crypto`
+- **Challenge(s)** : Noise Codex (HTB #1419, Easy) — flag en 0,05 s une fois fpylll installé
+- **Insight clé** : chiffrement bit par bit `c = p*distortion + 2*entropy + b` avec `p` (premier
+  1024 bits) NON fourni. Comme `2*entropy + b < 2^514 ≪ p`, on a `c mod p = bruit` donc
+  `b = (c mod p) & 1`. Tout le problème se réduit à retrouver `p` : c'est de l'approximate-GCD
+  (`c_i = p*q_i + r_i`, `r_i` petit). Signal de reconnaissance : un « bruit » additif borné
+  très inférieur à un modulus secret + plusieurs centaines d'échantillons.
+- **Approche** : attaque SDA (simultaneous Diophantine approximation). Avec `x0..xt` échantillons
+  et `ρ` = taille du bruit (514), base de dimension t+1 :
+  ligne 0 = `[2^(ρ+1), x1, …, xt]`, ligne i = `-x0` en colonne i. LLL → le vecteur court
+  `v[0] = q0*2^(ρ+1)` donne `q0 = |v[0]| / 2^(ρ+1)` puis `p = x0 // q0`. t=11 (dim 12) = marge
+  large (le gap est assuré dès t>4). Vérifier : `p` fait 1024 bits et `c_i % p < 2^514`.
+  Puis les 328 bits `b_i` → 41 caractères ASCII.
+- **Piège outillage** : image Exegol `free` sans fpylll/sage → `apt-get install -y python3-fpylll`
+  (cf. [[lessons-learned]] 2026-10-30). Un LLL pur-Python sur `Fraction` n'est pas viable
+  (>120 s, vs 0,05 s en C).
+
+---
+
 ## ICS / Systèmes industriels
 
 ### Lecture non authentifiée de tag EtherNet/IP (CIP)
@@ -75,4 +97,4 @@ Format d'une entrée :
 
 ---
 
-_Dernière mise à jour : 2026-10-30 (backfill SpookyPass, EtherTag, GameLoader)_
+_Dernière mise à jour : 2026-10-30 (NoiseCodex : ACD par SDA + LLL)_
