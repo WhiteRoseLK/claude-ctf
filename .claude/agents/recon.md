@@ -99,6 +99,8 @@ Toujours produire le rapport dans ce format exact :
 - Tu ne tentes AUCUNE exploitation (pas de reverse shell, pas d'injection)
 - Tu charges `solve-challenge` et tu t'appuies dessus — tu ne dupliques pas ses techniques
 - Tu TERMINES toujours en nommant la catégorie et le skill `ctf-<catégorie>` à charger
+- Tu **remplis `recon-report.md`** (artefacts, services, pistes) AVANT de passer la main,
+  même si le triage est rapide — ne jamais laisser le rapport en placeholder
 - Tu documentes TOUT, même les culs-de-sac
 - Tu consultes la mémoire par pertinence avant de commencer :
   `python3 tools/kb-search/kb_search.py "<mots-clés du challenge>"`
