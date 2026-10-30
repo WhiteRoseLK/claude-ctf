@@ -23,3 +23,12 @@ le skill `ctf-submit` (qui appelle `~/.claude/ctf/ctf_cli.py submit --id <id> --
    mais soumettre quand même si l'utilisateur confirme.
 
 4. **Commit git** : `[exploit] <nom-du-challenge>: flag soumis et archivé`
+
+5. **Clôturer le challenge (boucle mémoire)** — uniquement si la soumission est un succès
+   (ou si le flag est confirmé correct) :
+   - Si `challenges/<nom-du-challenge>/writeup.md` est absent ou encore un placeholder,
+     proposer de lancer l'agent `writeup` pour le générer.
+   - Puis **proposer d'enchaîner `/ctf-retro <nom-du-challenge>`** pour mettre à jour la
+     knowledge base et produire la rétrospective.
+   - C'est le bon moment pour capitaliser (« après un flag ») — ne pas sauter cette étape,
+     mais demander confirmation avant de lancer les agents.
