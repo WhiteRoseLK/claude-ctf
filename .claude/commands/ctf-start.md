@@ -23,10 +23,13 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
    - Date de début
    - Catégorie si connue
 
-3. **Consulter la knowledge base** :
-   - Lire `knowledge-base/techniques.md` pour les techniques connues dans cette catégorie
-   - Lire `knowledge-base/lessons-learned.md` pour les erreurs à éviter
-   - Résumer les points pertinents dans notes.md
+3. **Consulter la knowledge base par pertinence** :
+   ```bash
+   python3 tools/kb-search/kb_search.py "<nom-du-challenge> <catégorie si connue> <mots-clés>"
+   ```
+   Cela remonte les techniques, leçons, writeups et rétros les plus proches (KB + mémoire).
+   Compléter si besoin par une lecture directe de `knowledge-base/techniques.md` et
+   `lessons-learned.md`. Résumer les points pertinents dans notes.md.
 
 4. **Commit git** : `[init] <challenge-name>: initialisation du challenge`
 

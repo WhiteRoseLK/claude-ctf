@@ -41,9 +41,11 @@ une technique de skill dans un agent ou dans la knowledge base.
 - Les timestamps sont obligatoires pour mesurer le temps par phase
 
 ### Knowledge Base
-- **TOUJOURS** consulter `knowledge-base/techniques.md` avant de tenter une technique
-- **TOUJOURS** consulter `knowledge-base/lessons-learned.md` pour éviter les erreurs connues
-- Après chaque challenge, mettre à jour ces fichiers
+- **TOUJOURS** consulter la mémoire par pertinence avant de tenter une technique :
+  `python3 tools/kb-search/kb_search.py "<mots-clés>"` (indexe KB + writeups + rétros, TF-IDF, zéro dépendance)
+- Compléter au besoin par la lecture de `knowledge-base/techniques.md` et `lessons-learned.md`
+- La KB est un **journal expérientiel** (ce qu'on a appris), pas une copie des skills
+- Après chaque challenge, mettre à jour ces fichiers (via `/ctf-retro`)
 
 ### Git
 - Commit à chaque fin de phase (recon, exploit, writeup, retro)
