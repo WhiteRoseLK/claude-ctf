@@ -64,6 +64,24 @@ Format : **Date** / **Challenge** — **Problème** → **Cause** → **Solution
 - **Règle** : **vérifier quel code est réellement atteint / compare l'entrée** ; ne pas supposer que la
   sortie `putchar` contient le flag.
 
+### 2026-10-31 — SuspiciousThreat (Forensics, HTB #746)
+- **Problème 1 (plateforme)** : le téléchargement du challenge a donné un faux « zip » (JSON d'erreur
+  « Challenge file not found »). Le challenge est container-only (`play_methods: ["container"]`).
+- **Ce qu'on aurait dû faire** : ne pas télécharger ; spawner via `POST /api/v4/container/start`
+  (headers `Origin`/`Referer` = app.hackthebox.com) puis lire host/port/mot de passe (`hackthebox`).
+- **Règle** : challenge sans fichier = spawn API, pas de download.
+- **Problème 2 (outil)** : `objdump` d'Exegol est aarch64 (« can't disassemble for architecture
+  UNKNOWN ») sur une lib x86-64. `strings`/`nm -D`/`objdump -s -j .rodata` ont suffi.
+- **Règle** : sur binaire x86, ne pas compter sur `objdump -d` ; `strings`, `nm`, `readelf`, ou capstone Python.
+- **Problème 3 (sécurité)** : `ctf_cli.py status` affiche le token HTB ; IP:port et identifiants de
+  l'instance ont été écrits dans recon-report/notes committés.
+- **Règle** : ne jamais lancer/logguer `status` ; placeholders `<HOST>:<PORT>` dans les fichiers committés.
+- **Technique** : rootkit LD_PRELOAD qui hooke `readdir` = on ne désarme pas, on lit par chemin
+  direct ou on réénumère en `getdents64`. Voir [[techniques]] § Forensics.
+- **Process** : recon-report complet (règle NoiseCodex tenue), délégation et Exegol respectés.
+  **Règle** : remplir `notes.md` « Mémoire pertinente » avec la sortie de kb-search dès l'init,
+  même quand la KB ne remonte rien (noter « aucune entrée pertinente »).
+
 ---
 
 ## Règles accumulées (consultation rapide)
@@ -81,6 +99,11 @@ Format : **Date** / **Challenge** — **Problème** → **Cause** → **Solution
 8. Instructions `aes*` (AES-NI) dans un binaire = crypto maison : les réimplémenter en Python, ne pas exécuter (PartialEncryption).
 9. Code décrypté au runtime : se méfier des routines leurres ; le flag peut être dans les `cmp argv[1][i]` du vrai checker.
 
+10. Challenge HTB container-only (pas de fichier) : spawn via `POST /api/v4/container/start` (Origin/Referer), pas de download (SuspiciousThreat).
+11. `objdump` d'Exegol = aarch64 : inutilisable sur du x86 ; `strings`/`nm -D`/`readelf` (SuspiciousThreat).
+12. Jamais de token/IP/identifiants d'instance dans les fichiers committés ; ne pas lancer `ctf_cli.py status` (fuite du token).
+13. Rootkit userland (hook `readdir`) : lire par chemin absolu ou `getdents64` brut, sans modifier la cible.
+
 ---
 
-_Dernière mise à jour : 2026-10-31 (PartialEncryption)_
+_Dernière mise à jour : 2026-10-31 (SuspiciousThreat)_

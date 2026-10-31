@@ -91,6 +91,22 @@ Format d'une entrée :
 
 ---
 
+## Forensics
+
+### Rootkit userland LD_PRELOAD (`/etc/ld.so.preload`) — hook `readdir`
+- **Catégorie / skill** : forensics (machine live) → `ctf-forensics`
+- **Challenge(s)** : SuspiciousThreat (HTB #746)
+- **Symptômes de l'énoncé** : « erreurs de linking de libs », dossiers « manquants » alors que leur existence est confirmée → penser LD_PRELOAD/ld.so.preload d'office.
+- **Insight clé** : le hook ne filtre que les **listings** (`readdir`/`readdir64`) et `fopen`. `open()`, `stat()`, `cat` par **chemin absolu** ne sont pas interceptés. Donc inutile de désarmer le rootkit : si on devine/déduit le chemin, `cat` suffit. Le nom caché (`pr3l04d_`) est lisible dans `strings` de la lib.
+- **Approche** :
+  1. `cat /etc/ld.so.preload` (lisible alors que `ls /etc` ne le liste pas), `env | grep LD_`.
+  2. Récupérer la lib par `scp` (visible dans `ls`), puis `nm -D` (exports `readdir/readdir64/fopen`), `strings` (motifs filtrés), `objdump -s -j .rodata`. Pas besoin de désassembler.
+  3. Réénumérer avec un `getdents64` brut (Python `ctypes.syscall(217, fd, buf, n)`, **x86_64 seulement**, parser `ino,off,reclen,type,name`) : révèle les entrées masquées.
+  4. Lire par chemin direct (`cat /var/pr3l04d_/flag.txt`). Dans un dossier caché, les fichiers dont le nom ne contient pas le motif restent listables.
+- **À éviter** : modifier la cible (`mv /etc/ld.so.preload`) sans nécessité. `objdump` d'Exegol est aarch64, donc inutilisable sur la lib x86-64 (voir [[lessons-learned]]).
+
+---
+
 ## ICS / Systèmes industriels
 
 ### Lecture non authentifiée de tag EtherNet/IP (CIP)
@@ -117,4 +133,4 @@ Format d'une entrée :
 
 ---
 
-_Dernière mise à jour : 2026-10-30 (NoiseCodex : ACD par SDA + LLL)_
+_Dernière mise à jour : 2026-10-31 (SuspiciousThreat : rootkit LD_PRELOAD)_

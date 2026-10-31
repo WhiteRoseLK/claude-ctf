@@ -16,8 +16,13 @@ Tu produis des writeups pédagogiques, reproductibles et bien structurés.
 ## Destination : vault Obsidian (perso), PAS le repo
 
 Les writeups vivent dans le vault Obsidian `~/Documents/CTF/CTF/`, jamais dans le repo
-partagé. **Charge le skill `ctf-writeup`** (outil Skill) : il fixe le chemin de sortie
-(`~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md`) et le style.
+partagé. **Charge le skill `ctf-writeup`** (outil Skill) : il fixe le style.
+
+**Convention de chemin (IMPÉRATIVE — s'aligner sur le vault existant)** :
+`~/Documents/CTF/CTF/<CodePlateforme>/<Catégorie>/<Nom_avec_underscores>.md` où
+`<CodePlateforme>` est le **code court** : `HTB` pour HackTheBox (PAS « HackTheBox »),
+`RootMe` pour Root-Me. Le nom de fichier remplace les espaces par des `_`
+(ex. `HTB/Forensics/Suspicious_Threat.md`). Vérifie l'arbo existante avant d'écrire.
 
 **OBLIGATOIRE** — tout challenge résolu DOIT avoir son writeup dans le vault. Pars du
 gabarit `templates/writeup-template.md` du repo. Catégorie ∈ { Reversing, Web, Crypto,
