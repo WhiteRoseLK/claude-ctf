@@ -51,7 +51,6 @@
       "Bash(bash challenges/*)",
       "Bash(python3 tools/*)",
       "Bash(python3 ~/.claude/ctf/*)",
-      "Bash(python3 -c*)",
       "Bash(./install.sh*)",
       "Bash(docker exec exegol-ctf-*)"
     ],
