@@ -24,11 +24,19 @@ le skill `ctf-submit` (qui appelle `~/.claude/ctf/ctf_cli.py submit --id <id> --
 
 4. **Commit git** : `[exploit] <nom-du-challenge>: flag soumis et archivé`
 
-5. **Clôturer le challenge (boucle mémoire)** — uniquement si la soumission est un succès
-   (ou si le flag est confirmé correct) :
-   - Proposer de lancer l'agent `writeup` : il publie dans le **vault Obsidian**
-     `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md` (pas dans le repo).
-   - Puis **proposer d'enchaîner `/ctf-retro <nom-du-challenge>`** pour mettre à jour la
-     knowledge base et produire la rétrospective.
-   - C'est le bon moment pour capitaliser (« après un flag ») — ne pas sauter cette étape,
-     mais demander confirmation avant de lancer les agents.
+5. **Sauver le solveur dans le record** (avant tout cleanup) : copier le(s) script(s) de solve
+   de `work/` vers `challenges/<nom>/solution/` (committé) pour que le writeup reste reproductible
+   même différé et après suppression de `work/`.
+
+6. **Clôturer selon le MODE** — uniquement si la soumission est un succès (flag confirmé correct).
+   Lire le mode :
+   ```bash
+   MODE=$(cat .ctf-mode 2>/dev/null || echo training)   # défaut : training
+   ```
+   - **`training`** (défaut) → **enchaîner automatiquement** (sans redemander, c'est la boucle d'entraînement) :
+     a. déléguer le sous-agent `writeup` → vault Obsidian `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md` ;
+     b. puis `/ctf-retro <nom-du-challenge>` → sous-agent `review` en **mode approfondi**
+        (post-mortem méthodo/pièges/cadre + propositions, en plus de la KB/rétro).
+   - **`competition`** → **s'arrêter là** : flag archivé + record committé (recon-report + exploit-log +
+     flag + solution/). **Pas de writeup, pas de review** (réservés pour plus tard, économie de tokens).
+     Signaler : « writeup différé + review sautée (mode compétition) ; régénérables via les logs ».
