@@ -42,6 +42,11 @@ Les secrets (tokens, config plateforme) ne sont **jamais versionnés** (voir `.g
 
 ## Workflow
 
+**Mode** (`/ctf-mode`, défaut `training`) : en **entraînement**, après un flag l'orchestrateur enchaîne
+automatiquement writeup + review approfondie (méthodo, pièges, respect du cadre) — la boucle d'amélioration.
+En **compétition**, il s'arrête à la soumission (writeup différé, review sautée) pour économiser les tokens ;
+le record committé reste complet et régénérable.
+
 1. `/ctf-connect <plateforme> <token>` — se connecter (puis `/ctf-list`, `/ctf-solve` au besoin).
 2. `/ctf-start <plateforme> <challenge> [cible]` — structure le challenge, consulte la mémoire,
    démarre le conteneur Exegol.
@@ -49,9 +54,9 @@ Les secrets (tokens, config plateforme) ne sont **jamais versionnés** (voir `.g
    (avec la catégorie détectée). Aucune exploitation.
 4. **Exploit** — l'agent `exploit` charge le skill `ctf-<catégorie>`, attaque, logge tout dans
    `exploit-log.md`, extrait le flag.
-5. `/ctf-submit <challenge> <flag>` — archive + soumet, puis propose writeup et rétro.
-6. **Writeup** (agent `writeup` → vault) puis `/ctf-retro <challenge>` (agent `review` →
-   met à jour la knowledge base).
+5. `/ctf-submit <challenge> <flag>` — archive + soumet + sauve le solveur dans `solution/`.
+6. **Selon le mode** — training : **Writeup** (agent `writeup` → vault, avec méthodo/tips/erreurs) +
+   `/ctf-retro` (agent `review` approfondi → KB + post-mortem) ; competition : différés.
 
 > Pour un challenge réseau, `/ctf-start` peut proposer des **Agent Teams** (recon + exploit en
 > parallèle) — activées via `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS` dans `.claude/settings.json`.

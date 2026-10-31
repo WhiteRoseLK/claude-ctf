@@ -92,6 +92,9 @@ Lis ces fichiers dans l'ordre avant de rédiger :
 - Quelqu'un qui ne connaît PAS le challenge doit pouvoir suivre et reproduire
 - Expliquer le POURQUOI, pas juste le COMMENT
 - Chaque commande doit être accompagnée d'une explication de ce qu'elle fait
+- **Le writeup n'est PAS que la solution** : il DOIT contenir la **Méthodologie** (le raisonnement),
+  des **Tips** réutilisables, et les **Erreurs à éviter** (faux amis, impasses) — sections du gabarit
+  `templates/writeup-template.md`. C'est ça qui en fait un support d'apprentissage.
 
 ### Honnêteté
 - Inclure les erreurs et les impasses — c'est ce qui rend un writeup utile

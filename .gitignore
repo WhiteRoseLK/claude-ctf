@@ -22,3 +22,6 @@ challenges/*/writeup.md
 
 # === OS ===
 .DS_Store
+
+# Mode du workspace (training/competition) — perso, défaut training si absent
+.ctf-mode

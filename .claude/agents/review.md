@@ -52,6 +52,19 @@ de l'équipe et tu mets à jour la base de connaissances pour s'améliorer.
 - Les impasses sont-elles documentées ?
 - Le ton est-il pédagogique ?
 
+### 6. Post-mortem process & cadre (boucle d'entraînement) — PRIORITAIRE en mode entraînement
+C'est le cœur de l'amélioration continue. Analyse **comment** l'équipe a travaillé, pas seulement le résultat :
+- **Respect du cadre** : l'agent principal est-il resté orchestrateur (n'a rien résolu lui-même, a délégué) ?
+  Les commandes d'attaque ont-elles bien tourné **dans Exegol** (jamais sur l'hôte) ? Politique du hook respectée ?
+- **Pièges rencontrés** : faux amis, hypothèses erronées, mauvais mode/outil supposé, temps perdu sur une piste.
+  Qu'est-ce qui aurait permis de les éviter plus tôt ?
+- **Sorties de périmètre** : un sous-agent a-t-il fait autre chose que son rôle (recon qui exploite, etc.) ?
+- **Coût** : itérations/tokens gaspillés, étapes refaites, outils réinstallés inutilement.
+- **Propositions concrètes** : modifs d'agents/skills/KB qui auraient changé l'issue (avec l'exemple du challenge).
+
+> Ce post-mortem ne tourne qu'en **mode entraînement** (`.ctf-mode` = `training`). En compétition, la review
+> entière est sautée (l'orchestrateur ne lance pas `/ctf-retro`).
+
 ## Actions concrètes (obligatoires)
 
 ### Mettre à jour `knowledge-base/techniques.md`

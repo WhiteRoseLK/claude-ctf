@@ -37,14 +37,24 @@ L'agent principal **orchestre, il ne résout jamais lui-même**. Il écoute l'ut
 - Il ne garde en propre que : l'init (`/ctf-start`), la **soumission** (`/ctf-submit`), et le
   **déclenchement** des sous-agents `writeup` et `review`.
 
+## Mode : entraînement / compétition
+
+Le workspace a deux modes, dans `.ctf-mode` (gitignoré, perso) ; **défaut = `training` si absent**.
+Bascule : `/ctf-mode training|competition`. Lecture : `MODE=$(cat .ctf-mode 2>/dev/null || echo training)`.
+
+- **`training`** (défaut) — boucle d'entraînement complète : après un flag validé, l'orchestrateur
+  enchaîne **automatiquement** writeup + **review approfondie** (post-mortem méthodo/pièges/cadre).
+- **`competition`** — vitesse/économie de tokens : l'orchestrateur **s'arrête après la soumission**
+  (flag + record committé) ; writeup **différé** et review **sautée** (régénérables depuis les logs plus tard).
+
 ## Workflow standard (tout est délégué par l'orchestrateur)
 
 1. **Init** → l'orchestrateur lance `/ctf-start <plateforme> <challenge>` (structure, mémoire, conteneur Exegol)
 2. **Phase Recon** → l'orchestrateur **délègue au sous-agent `recon`** : charge `solve-challenge`, triage, produit `recon-report.md` avec la **catégorie détectée**
-3. **Phase Exploit** → l'orchestrateur **délègue au sous-agent `exploit`** : charge le skill `ctf-<catégorie>`, attaque dans le conteneur Exegol, produit `exploit-log.md` + `flag.txt`
-4. **Soumission** → l'orchestrateur lance `/ctf-submit <challenge> <flag>` (archive + soumet)
-5. **Writeup** → l'orchestrateur **délègue au sous-agent `writeup`** → vault Obsidian `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md` (via skill `ctf-writeup`), pas dans le repo
-6. **Retrospective** → l'orchestrateur lance `/ctf-retro <challenge>` → **sous-agent `review`** (met à jour la knowledge base)
+3. **Phase Exploit** → l'orchestrateur **délègue au sous-agent `exploit`** : charge le skill `ctf-<catégorie>`, attaque dans le conteneur Exegol, produit `exploit-log.md` + `flag.txt` + solveur dans `solution/`
+4. **Soumission** → l'orchestrateur lance `/ctf-submit <challenge> <flag>` (archive + soumet + sauve le solveur dans `solution/`)
+5. **Writeup** (⚙ training : auto · competition : différé) → sous-agent `writeup` → vault Obsidian `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md`, jamais dans le repo. Inclut **méthodo + tips + erreurs à éviter**, pas que la solution.
+6. **Review** (⚙ training uniquement) → `/ctf-retro <challenge>` → sous-agent `review` en mode approfondi (KB/rétro **+ post-mortem process/cadre**). En compétition : sautée.
 
 ## Conventions obligatoires
 
@@ -73,6 +83,7 @@ challenges/<nom-challenge>/
 ├── recon-report.md     # Rapport de reconnaissance structuré
 ├── exploit-log.md      # Journal chronologique des tentatives
 ├── flag.txt            # Le flag extrait
+├── solution/           # Solveur(s) finaux — COMMITÉ (repro même après cleanup de work/)
 ├── cleanup.sh          # Script de nettoyage (supprime le conteneur Exegol et work/)
 ├── .gitignore          # Ignore work/
 └── work/               # Fichiers de travail temporaires (montés dans Exegol sur /workspace)
