@@ -48,6 +48,22 @@ Format : **Date** / **Challenge** — **Problème** → **Cause** → **Solution
   **Remplir recon-report.md même si le triage est court** (artefacts, analyse de la source,
   hypothèse de vecteur) : sert à l'agent exploit et à la rétro.
 
+### 2026-10-31 — PartialEncryption
+- **Problème 1 (process)** : le ZIP du challenge était protégé, le CLI HTB annonçait
+  `file_password: None`, l'extraction a échoué et la recon a été bloquée jusqu'à confirmation
+  manuelle du mot de passe (`hackthebox`).
+- **Ce qu'on aurait dû faire** : tester directement `hackthebox` (mot de passe standard des archives HTB).
+- **Règle** : **ne pas se fier à `file_password: None`** ; essayer `hackthebox` d'office avant de bloquer.
+- **Problème 2 (technique)** : les instructions **AES-NI** (`aesenc`/`aesdec`/`aesdeclast`/
+  `aeskeygenassist`) sont du « crypto maison », pas un XOR trivial. `rabin2 -I` disait `crypto false`
+  (pas de constantes détectées) : cet indicateur est trompeur avec AES-NI.
+- **Règle** : repérer `aes*` dans le désassemblage, puis réimplémenter en Python (S-box, RotWord=ROR8,
+  InvShiftRows) plutôt que d'exécuter le binaire. Voir [[techniques]] § Reverse.
+- **Problème 3 (leurres)** : 3 routines sur 4 ne font qu'imprimer un message d'usage via `putchar`.
+  Le flag se lit dans les `cmp argv[1][i]` du vrai checker.
+- **Règle** : **vérifier quel code est réellement atteint / compare l'entrée** ; ne pas supposer que la
+  sortie `putchar` contient le flag.
+
 ---
 
 ## Règles accumulées (consultation rapide)
@@ -61,7 +77,10 @@ Format : **Date** / **Challenge** — **Problème** → **Cause** → **Solution
 4. Un flag est souvent un tableau d'entiers (1 entier = 1 char ASCII) : vérifier `.data` / les tags.
 5. Toujours charger le skill `ctf-<catégorie>` avant d'attaquer — ne pas réinventer la technique.
 6. Remplir `recon-report.md` même quand le triage est rapide (NoiseCodex).
+7. Archive protégée : essayer `hackthebox` d'office, ne pas croire `file_password: None` du CLI HTB (PartialEncryption).
+8. Instructions `aes*` (AES-NI) dans un binaire = crypto maison : les réimplémenter en Python, ne pas exécuter (PartialEncryption).
+9. Code décrypté au runtime : se méfier des routines leurres ; le flag peut être dans les `cmp argv[1][i]` du vrai checker.
 
 ---
 
-_Dernière mise à jour : 2026-10-30 (NoiseCodex)_
+_Dernière mise à jour : 2026-10-31 (PartialEncryption)_

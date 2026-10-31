@@ -47,6 +47,26 @@ Format d'une entrée :
   concaténations de variables (`loap = zbxp + qiro`) avant de décoder.
 - **Approche** : extraire chaque tableau → `''.join(chr(c))` → `base64.b64decode`.
 
+### Partial runtime decryption via AES-NI (blobs `.data` déchiffrés à l'exécution)
+- **Catégorie / skill** : reverse → `ctf-reverse`
+- **Challenge(s)** : PartialEncryption (HTB #306, PE64 x86-64)
+- **Quand l'utiliser** : PE sans chaînes, `.data` anormalement grosse (0xa00 pour 13 Ko), imports
+  `VirtualAlloc`/`VirtualProtect`, `main` qui passe `putchar`/`exit`/`argv` à des routines.
+- **Insight clé** : un déchiffreur commun fait `VirtualAlloc(RW)` → transfo par bloc de 16 o →
+  `VirtualProtect(RX)` → appel du shellcode. La transfo n'est pas un XOR mais des instructions
+  **AES-NI** : `result = aesdeclast(block XOR aeskeygenassist(key,0x10), aeskeygenassist(key,0x00))`,
+  avec `key16` = octet d'index du bloc broadcasté. Un seul tour, clé triviale → **réimplémentable
+  sans exécuter le PE** (ni wine, ni debug, anti-debug sans objet).
+- **Approche** :
+  1. `r2 -q -c 'aaa; pdf @ main'` puis `pdf` du déchiffreur et de la primitive → repérer `aes*`.
+  2. Dumper `.data` : `r2 -q -c 's 0x140004000; wtf /workspace/data.bin 0xa00' bin.exe`.
+  3. Python : S-box AES + inverse, `aeskeygenassist` (SubWord, RotWord = **ROR 8**, xor rcon),
+     `aesdeclast` = InvShiftRows (col-major) + InvSubBytes + xor roundkey.
+  4. Déchiffrer chaque blob, désassembler (`r2 -a x86 -b 64 -c 'pd 300' blob.bin`).
+  5. Extraire les constantes du vrai checker (`cmp eax, <char>` sur `argv[1][index]`).
+- **Pièges** : certains blobs sont des **leurres** (message d'usage via `putchar`) ; le flag est
+  dans les `cmp`, pas dans la sortie. Valider la transfo : tous les blobs doivent donner du x86 valide.
+
 ---
 
 ## Crypto
