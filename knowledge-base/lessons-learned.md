@@ -54,12 +54,13 @@ Format : **Date** / **Challenge** — **Problème** → **Cause** → **Solution
 
 1. Confirmer le mode/format de chiffrement par reverse **avant** tout brute-force (GameLoader).
 2. Vérifier la dispo d'un outil avant d'en dépendre ; sinon l'**installer** dans le conteneur
-   (`apt install`, NoiseCodex), et ne réimplémenter en Python que le simple (protocole, parsing : EtherTag).
+   (`apt install …`, ex. `python3-fpylll`), et ne réimplémenter en Python que le simple (protocole,
+   parsing : EtherTag). En particulier **jamais de LLL/calcul lourd en pur-Python** (NoiseCodex : >120 s
+   vs 0,05 s avec fpylll).
 3. Analyse statique la moins coûteuse d'abord ; exécution/patch en recours (SpookyPass).
 4. Un flag est souvent un tableau d'entiers (1 entier = 1 char ASCII) : vérifier `.data` / les tags.
 5. Toujours charger le skill `ctf-<catégorie>` avant d'attaquer — ne pas réinventer la technique.
-6. Pas de LLL/calcul lourd en pur-Python : installer fpylll/sage (`apt install python3-fpylll`) (NoiseCodex).
-7. Remplir `recon-report.md` même quand le triage est rapide (NoiseCodex).
+6. Remplir `recon-report.md` même quand le triage est rapide (NoiseCodex).
 
 ---
 

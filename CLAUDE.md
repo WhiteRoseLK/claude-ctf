@@ -91,15 +91,17 @@ L'hôte macOS n'a pas ces outils → ne pas lancer les commandes d'attaque direc
 > **Politique OBLIGATOIRE (appliquée par un hook `PreToolUse`)** : toute commande qui n'est
 > pas de l'orchestration (git, docker, exegol, outils du repo) ni un `docker exec exegol-ctf-*`
 > déclenche une demande d'acceptation expresse. Par défaut : exécuter dans Exegol.
-> Hook : `tools/hooks/enforce_exegol.py`.
+> Hook : `tools/hooks/enforce_exegol.py`. Il est chargé au **démarrage de session** ; si le hook
+> est ajouté ou modifié en cours de session, le recharger via `/hooks` (ou relancer `claude`).
 
 ### Cycle de vie du conteneur (un par challenge)
 
 ```bash
 # Démarrage (fait par /ctf-start) — work/ monté sur /workspace
-# --offline --accept-eula : évite les prompts interactifs d'Exegol (notice de MAJ, EULA)
-#   qui bloqueraient l'automatisation. Image : toujours `free` (les autres sont payantes).
-exegol start "ctf-<nom>" free --offline --accept-eula \
+# `yes '' |` : Exegol affiche encore un prompt « Press ENTER » (notice de MAJ) MÊME avec
+#   --offline ; sans stdin il quitte sans créer le conteneur. On acquitte en alimentant des
+#   newlines. --accept-eula couvre l'EULA. Image : toujours `free` (les autres sont payantes).
+yes '' | exegol start "ctf-<nom>" free --offline --accept-eula \
   --workspace "$(pwd)/challenges/<nom>/work" \
   --disable-X11 -s bash
 # + --vpn ~/htb.ovpn  si le challenge a une cible réseau HTB (sinon omettre)
