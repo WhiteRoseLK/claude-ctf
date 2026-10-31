@@ -99,11 +99,13 @@ challenges/<nom-challenge>/
 un conteneur Exegol dédié au challenge** (c'est là que vivent nmap, pwntools, ghidra, binwalk, john…).
 L'hôte macOS n'a pas ces outils → ne pas lancer les commandes d'attaque directement dessus.
 
-> **Politique OBLIGATOIRE (appliquée par un hook `PreToolUse`)** : toute commande qui n'est
-> pas de l'orchestration (git, docker, exegol, outils du repo) ni un `docker exec exegol-ctf-*`
-> déclenche une demande d'acceptation expresse. Par défaut : exécuter dans Exegol.
-> Hook : `tools/hooks/enforce_exegol.py`. Il est chargé au **démarrage de session** ; si le hook
-> est ajouté ou modifié en cours de session, le recharger via `/hooks` (ou relancer `claude`).
+> **Politique (hook `PreToolUse`, liste noire — autorise par défaut)** : l'orchestration et
+> l'inspection (git, grep, find, sed, awk, cat, docker, exegol, outils du repo…) passent **sans
+> friction**. Seule une commande de **résolution/attaque lancée sur l'hôte** (outil CTF : nmap,
+> binwalk, radare2, gdb, wine, nc… ; exécution d'un binaire/artefact ; script de solve) déclenche
+> une demande d'acceptation expresse — le réflexe étant de la lancer dans Exegol (`docker exec
+> exegol-ctf-<nom> …`). Hook : `tools/hooks/enforce_exegol.py`. Chargé au **démarrage de session** ;
+> si modifié en cours de session, le recharger via `/hooks` (ou relancer `claude`).
 
 ### Cycle de vie du conteneur (un par challenge)
 
