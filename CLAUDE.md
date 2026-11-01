@@ -65,7 +65,7 @@ Bascule : `/ctf-mode training|competition`. Lecture : `MODE=$(cat .ctf-mode 2>/d
 
 ### Knowledge Base
 - **TOUJOURS** consulter la mémoire par pertinence avant de tenter une technique :
-  `python3 tools/kb-search/kb_search.py "<mots-clés>"` (indexe KB + writeups + rétros, TF-IDF, zéro dépendance)
+  `python3 tools/kb-search/kb_search.py "<mots-clés>"` (indexe KB + rétros de ce repo, TF-IDF, zéro dépendance ; les writeups du repo CTF ne sont pas indexés)
 - Compléter au besoin par la lecture de `knowledge-base/techniques.md` et `lessons-learned.md`
 - La KB est un **journal expérientiel** (ce qu'on a appris), pas une copie des skills
 - Après chaque challenge, mettre à jour ces fichiers (via `/ctf-retro`)
@@ -73,7 +73,7 @@ Bascule : `/ctf-mode training|competition`. Lecture : `MODE=$(cat .ctf-mode 2>/d
 ### Git
 - **Deux repos** : le record du challenge (notes, recon, exploit-log, flag, solution, writeup) se commit dans
   le **repo CTF privé** (`$CTF_REPO`) ; ce repo-ci (public) ne reçoit que KB, rétros et outillage.
-- Commit à chaque fin de phase (recon, exploit, writeup → repo CTF ; retro → ce repo)
+- Commit à chaque fin de phase (recon, exploit, writeup → repo CTF, suivi d'un `git push` ; retro → ce repo)
 - Messages de commit : `[phase] challenge-name: description`
 - Exemples : `[recon] Keeper: scan initial nmap`, `[exploit] Keeper: privesc via CVE-2023-xxxxx`
 
@@ -83,7 +83,8 @@ Les challenges vivent **hors de ce repo** (public), dans le **repo CTF privé**
 `WhiteRoseLK/ctf-writeups`, cloné sur `CTF_REPO=~/Documents/CTF/CTF` (c'est aussi le vault Obsidian).
 Dossier d'un challenge, noté **`<CHAL>`** partout :
 `$CTF_REPO/<Plateforme|Événement>/<Catégorie>/<Nom>/` — plateforme `HackTheBox`, `RootMe`, ou nom
-d'événement (`Airbus-Google-2026`…) ; catégorie de la plateforme (`_A-trier` si inconnue à l'init) ;
+d'événement (`Airbus-Google-2026`…) ; catégorie de la plateforme (`_A-trier` si inconnue à l'init, puis `git mv` vers la catégorie
+détectée par le recon avant le writeup) ;
 `<Nom>` sans espaces (underscores).
 
 ```

@@ -48,7 +48,7 @@
       "Bash(pbcopy*)",
       "Bash(pbpaste*)",
       "Bash(bash cleanup.sh*)",
-      "Bash(bash ~/Documents/CTF/CTF/*)",
+      "Bash(bash ~/Documents/CTF/CTF/*/cleanup.sh)",
       "Bash(python3 tools/*)",
       "Bash(python3 ~/.claude/ctf/*)",
       "Bash(./install.sh*)",
