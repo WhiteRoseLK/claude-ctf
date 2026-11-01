@@ -45,7 +45,7 @@ Bascule : `/ctf-mode training|competition`. Lecture : `MODE=$(cat .ctf-mode 2>/d
 - **`training`** (défaut) — boucle d'entraînement complète : après un flag validé, l'orchestrateur
   enchaîne **automatiquement** writeup + **review approfondie** (post-mortem méthodo/pièges/cadre).
 - **`competition`** — vitesse/économie de tokens : l'orchestrateur **s'arrête après la soumission**
-  (flag + record committé) ; writeup **différé** et review **sautée** (régénérables depuis les logs plus tard).
+  (flag + record conservés en local dans `challenges/<nom>/`) ; writeup **différé** et review **sautée** (régénérables depuis les logs plus tard).
 
 ## Workflow standard (tout est délégué par l'orchestrateur)
 
@@ -104,12 +104,13 @@ Obsidian). Destination **`<DEST>`** :
 - plateforme permanente : `<HackTheBox|RootMe>/<Catégorie>/<Nom>/`
 - CTF ponctuel : `<Événement>/<Année>/<Catégorie>/<Nom>/` (ex. `THCon/2026/Web/<Nom>/`)
 
-(catégorie de la plateforme, `<Nom>` avec underscores). On y écrit `<Nom>.md` (writeup) et on y
-copie `notes.md`, `recon-report.md`, `exploit-log.md`, `flag.txt`, `solution/` (jamais `work/`).
+(catégorie de la plateforme, `<Nom>` avec underscores). L'orchestrateur note `Export : <DEST>`
+dans `challenges/<nom>/notes.md` et y copie (`cp -R`) `notes.md`, `recon-report.md`,
+`exploit-log.md`, `flag.txt`, `solution/` (jamais `work/`) ; l'agent `writeup` y écrit `<Nom>.md`.
 **CTF ponctuel** : mettre à jour la synthèse `<Événement>/<Année>/README.md` (date, score, tableau
 challenge | catégorie | points | statut ✅ / ⚠️ tenté / ❌ | lien writeup), `<Événement>/README.md`
 (éditions) et le tableau du `README.md` racine. Puis commit `[writeup] <nom>: …` + `git push`
-dans le repo CTF.
+dans le repo CTF, faits par l'orchestrateur (étape writeup de `/ctf-submit`).
 
 ## Environnement d'exécution — Exegol
 

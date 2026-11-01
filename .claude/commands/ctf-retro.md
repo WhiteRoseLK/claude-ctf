@@ -10,7 +10,7 @@ Exemple : `/ctf-retro GameLoader`
 
 2. **Lancer l'agent `review`** (subagent) sur ce challenge. Il doit :
    - analyser `challenges/$ARGUMENTS/`{recon-report.md, exploit-log.md} et, s'il a été exporté,
-     le writeup `<DEST>/<Nom>.md` (lecture seule)
+     le writeup `<DEST>/<Nom>.md` (`<DEST>` lu dans la ligne `Export :` de `notes.md` ; lecture seule)
    - **ne recopier aucun flag** dans la KB ni la rétro (ce repo est public)
    - mettre à jour `knowledge-base/techniques.md` (nouvelles techniques réellement utilisées)
    - mettre à jour `knowledge-base/lessons-learned.md` (erreurs et règles)

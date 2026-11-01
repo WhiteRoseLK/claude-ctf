@@ -32,13 +32,17 @@ le skill `ctf-submit` (qui appelle `~/.claude/ctf/ctf_cli.py submit --id <id> --
    MODE=$(cat .ctf-mode 2>/dev/null || echo training)   # défaut : training
    ```
    - **`training`** (défaut) → **enchaîner automatiquement** (sans redemander, c'est la boucle d'entraînement) :
-     a. **Writeup + export** (seule étape hors de ce repo, cf. CLAUDE.md § Export) : déléguer le
-        sous-agent `writeup` en lui passant `challenges/<nom>/` et la destination exacte `<DEST>`
-        (catégorie détectée par le recon ; `<Événement>/<Année>` pour un CTF ponctuel). Puis
-        vérifier les fichiers exportés et `git -C ~/Documents/CTF/CTF add <DEST> … && commit
+     a. **Writeup + export** (seule étape hors de ce repo, cf. CLAUDE.md § Export) : fixer `<DEST>`
+        (catégorie détectée par le recon ; `<Événement>/<Année>` pour un CTF ponctuel), l'écrire
+        dans `challenges/<nom>/notes.md` (`Export : <DEST>`), copier le record (`cp -R` notes,
+        recon-report, exploit-log, flag, solution/ — pas work/) vers `~/Documents/CTF/CTF/<DEST>/`,
+        puis déléguer le sous-agent `writeup` (writeup + synthèse d'édition) en lui passant
+        `challenges/<nom>/` et `<DEST>`. Enfin vérifier les fichiers exportés et `git -C ~/Documents/CTF/CTF add <DEST> … && commit
         "[writeup] <nom>: …" && push` ;
      b. puis `/ctf-retro <nom-du-challenge>` → sous-agent `review` en **mode approfondi**
         (post-mortem méthodo/pièges/cadre + propositions, en plus de la KB/rétro).
    - **`competition`** → **s'arrêter là** : flag + record conservés en local dans `challenges/<nom>/`
      (recon-report + exploit-log + flag + solution/, non versionnés : ne pas les supprimer). **Pas de writeup, pas de review** (réservés pour plus tard, économie de tokens).
      Signaler : « writeup différé + review sautée (mode compétition) ; régénérables via les logs ».
+     **Plus tard** (writeup différé) : relancer l'étape 6a ci-dessus pour ce challenge, puis
+     éventuellement `/ctf-retro`.

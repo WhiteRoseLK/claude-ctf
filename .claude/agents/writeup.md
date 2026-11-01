@@ -18,7 +18,7 @@ Tu produis des writeups pédagogiques, reproductibles et bien structurés.
 Tu lis le record **local** `challenges/<nom>/` et tu **exportes** vers `<DEST>` dans le repo CTF
 privé `~/Documents/CTF/CTF` (= vault Obsidian ; cf. CLAUDE.md § Export) :
 - `<DEST>/<Nom>.md` : le writeup — ex. `~/Documents/CTF/CTF/HackTheBox/Mobile/APKey/APKey.md`
-- copies de `notes.md`, `recon-report.md`, `exploit-log.md`, `flag.txt` et `solution/*` (jamais `work/`)
+  (le record — notes, logs, flag, `solution/` — y est déjà copié par l'orchestrateur)
 - **CTF ponctuel** (`<DEST>` = `<Événement>/<Année>/<Catégorie>/<Nom>/`) : mettre à jour la synthèse
   `<Événement>/<Année>/README.md` (ligne du challenge : catégorie, points, statut, lien writeup),
   `<Événement>/README.md` et le tableau du `README.md` racine (créer s'ils manquent).

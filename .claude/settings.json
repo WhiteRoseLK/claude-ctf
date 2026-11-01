@@ -47,8 +47,6 @@
       "Bash(open*)",
       "Bash(pbcopy*)",
       "Bash(pbpaste*)",
-      "Bash(bash cleanup.sh*)",
-      "Bash(bash challenges/*/cleanup.sh)",
       "Bash(python3 tools/*)",
       "Bash(python3 ~/.claude/ctf/*)",
       "Bash(./install.sh*)",
