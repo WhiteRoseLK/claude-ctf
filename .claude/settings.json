@@ -54,7 +54,9 @@
       "Bash(./install.sh*)",
       "Bash(docker exec exegol-ctf-*)"
     ],
-    "deny": []
+    "deny": [
+      "Bash(bash *..*)"
+    ]
   },
   "hooks": {
     "PreToolUse": [
