@@ -36,7 +36,8 @@ le skill `ctf-submit` (qui appelle `~/.claude/ctf/ctf_cli.py submit --id <id> --
    MODE=$(cat .ctf-mode 2>/dev/null || echo training)   # défaut : training
    ```
    - **`training`** (défaut) → **enchaîner automatiquement** (sans redemander, c'est la boucle d'entraînement) :
-     a. déléguer le sous-agent `writeup` en lui passant le chemin exact `<CHAL>/<Nom>.md` ;
+     a. si `<CHAL>` est encore sous `_A-trier/`, le déplacer (`git -C ~/Documents/CTF/CTF mv`) vers la
+        catégorie détectée par le recon ; puis déléguer le sous-agent `writeup` en lui passant le chemin exact `<CHAL>/<Nom>.md` ;
         puis commit `[writeup] <nom>: …` dans le repo CTF ;
      b. puis `/ctf-retro <nom-du-challenge>` → sous-agent `review` en **mode approfondi**
         (post-mortem méthodo/pièges/cadre + propositions, en plus de la KB/rétro).
