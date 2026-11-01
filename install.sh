@@ -159,8 +159,8 @@ setup_opencodex() {
   # 2) CLI `ocx` (npm) — fournit la commande `ocx claude`
   have node || warn "Node.js absent — requis pour le CLI ocx (npm)."
   ensure_dep "OpenCodex CLI (ocx)" ocx \
-    "npm install -g @bitkyc08/opencodex" \
-    "npm install -g @bitkyc08/opencodex" \
+    "npm install -g @bitkyc08/opencodex@2.96.0" \
+    "npm install -g @bitkyc08/opencodex@2.96.0" \
     "Nécessite Node.js/npm."
 
   if ! have ocx; then
@@ -170,16 +170,16 @@ setup_opencodex() {
 
   # 3) Proxy + providers (OAuth interactif, non automatisé)
   ocx status >/dev/null 2>&1 || ocx start >/dev/null 2>&1 || true
-  if ocx account list 2>/dev/null | grep -qiE "anthropic.*active"; then
-    info "Provider Anthropic : connecté"
-  else
-    warn "Provider Anthropic non connecté — lancez 'ocx setup' (login OAuth)"
-  fi
-  if ocx account list 2>/dev/null | grep -qiE "google-antigravity.*active"; then
-    info "Provider Google (antigravity) : connecté"
-  else
-    warn "Provider Google non connecté — lancez 'ocx setup' (login OAuth)"
-  fi
+  _check_provider() {
+    local name="$1" pattern="$2"
+    if ocx account list 2>/dev/null | grep -qiE "$pattern"; then
+      info "Provider $name : connecté"
+    else
+      warn "Provider $name non connecté — lancez 'ocx setup' (login OAuth)"
+    fi
+  }
+  _check_provider "Anthropic" "anthropic.*active"
+  _check_provider "Google (antigravity)" "google-antigravity.*active"
 
   # 4) Workers failover (combos) + roster délégable — idempotent (upsert)
   echo "  Workers (combos failover + roster)…"
@@ -189,15 +189,15 @@ setup_opencodex() {
   }
   _ocx_combo flash  "google-antigravity/gemini-3.8-flash,anthropic/claude-haiku-5-5" "flash→haiku"
   _ocx_combo haiku  "anthropic/claude-haiku-5-5,google-antigravity/gemini-3.8-flash" "haiku→flash"
-  _ocx_combo sonnet "anthropic/claude-sonnet-5,google-antigravity/gemini-4-argon"    "sonnet→argon"
-  _ocx_combo argon  "google-antigravity/gemini-4-argon,anthropic/claude-sonnet-5"    "argon→sonnet"
+  _ocx_combo sonnet "anthropic/claude-sonnet-5-5,google-antigravity/gemini-4-argon"  "sonnet→argon"
+  _ocx_combo argon  "google-antigravity/gemini-4-argon,anthropic/claude-sonnet-5-5"  "argon→sonnet"
   _ocx_combo opus   "anthropic/claude-opus-5-5,google-antigravity/gemini-4-argon"    "opus→argon"
   ocx agent subagents set combo/flash,combo/haiku,combo/sonnet,combo/argon,combo/opus >/dev/null 2>&1 \
     && info "roster : flash, haiku, sonnet, argon, opus" \
     || warn "roster : échec (providers configurés ?)"
 
   # 5) Raccourci zsh : `ocx claude` -> orchestrateur $OCX_MODEL (sessions CTF)
-  local marker_start="# >>> claude_ctf opencodex (ocx claude -> $OCX_MODEL) >>>"
+  local marker_start="# >>> claude_ctf opencodex >>>"
   local marker_end="# <<< claude_ctf opencodex <<<"
   if grep -qF "$marker_start" "$ZSHRC" 2>/dev/null; then
     info "Raccourci zsh : déjà présent dans ${ZSHRC/#$HOME/~}"
@@ -217,8 +217,8 @@ ocx() {
       *)
         shift
         case " \$* " in
-          *" --model "*|*" -m "*) command ocx claude "\$@" ;;
-          *) command ocx claude --model $OCX_MODEL "\$@" ;;
+          *" --model "*|*" --model="*|*" -m "*) command ocx claude "\$@" ;;
+          *) command ocx claude --model "$OCX_MODEL" "\$@" ;;
         esac
         ;;
     esac
