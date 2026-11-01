@@ -32,7 +32,8 @@ le skill `ctf-submit` (qui appelle `~/.claude/ctf/ctf_cli.py submit --id <id> --
    MODE=$(cat .ctf-mode 2>/dev/null || echo training)   # défaut : training
    ```
    - **`training`** (défaut) → **enchaîner automatiquement** (sans redemander, c'est la boucle d'entraînement) :
-     a. **Writeup + export** (seule étape hors de ce repo, cf. CLAUDE.md § Export) : fixer `<DEST>`
+     a. **Writeup + export** (quel que soit le mode quand on le lance ; seule étape hors de ce repo,
+        cf. CLAUDE.md § Export) : fixer `<DEST>`
         (catégorie détectée par le recon ; `<Événement>/<Année>` pour un CTF ponctuel), l'écrire
         dans `challenges/<nom>/notes.md` (`Export : <DEST>`) — `<DEST>` doit matcher
         `^[A-Za-z0-9_-]+(/[A-Za-z0-9_-]+)*$` (pas de `..`), sinon s'arrêter —, copier le record

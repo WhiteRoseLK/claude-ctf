@@ -43,7 +43,8 @@ Determine the writeup output path based on the platform and category:
 
 The writeup lives in the challenge folder of the private CTF repo (`~/Documents/CTF/CTF`, also the
 Obsidian vault), next to its notes, logs, flag and `solution/`: `<Platform>/<Category>/<Name>/<Name>.md`.
-If the orchestrator gave a path, use it exactly.
+If the orchestrator gave a path (`<DEST>`), use it exactly. The orchestrator copies the record
+(notes, logs, flag, `solution/`) there itself; this skill only writes the writeup and the edition summary.
 
 - **HackTheBox**: `~/Documents/CTF/CTF/HackTheBox/<Category>/<ChallengeName>/<ChallengeName>.md`
   - Category = the platform's category (`Crypto`, `Web`, `Reversing`, `Pwn`, `Forensics`, `Misc`, `OSINT`, `Mobile`, …)

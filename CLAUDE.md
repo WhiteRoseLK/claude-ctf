@@ -107,7 +107,7 @@ Obsidian). Destination **`<DEST>`** :
 (catégorie de la plateforme, `<Nom>` avec underscores). L'orchestrateur note `Export : <DEST>`
 dans `challenges/<nom>/notes.md` et y copie (`cp -R`) `notes.md`, `recon-report.md`,
 `exploit-log.md`, `flag.txt`, `solution/` (jamais `work/`) ; l'agent `writeup` y écrit `<Nom>.md`.
-**CTF ponctuel** : mettre à jour la synthèse `<Événement>/<Année>/README.md` (date, score, tableau
+**CTF ponctuel** : l'agent `writeup` met à jour la synthèse `<Événement>/<Année>/README.md` (date, score, tableau
 challenge | catégorie | points | statut ✅ / ⚠️ tenté / ❌ | lien writeup), `<Événement>/README.md`
 (éditions) et le tableau du `README.md` racine. Puis commit `[writeup] <nom>: …` + `git push`
 dans le repo CTF, faits par l'orchestrateur (étape writeup de `/ctf-submit`).
