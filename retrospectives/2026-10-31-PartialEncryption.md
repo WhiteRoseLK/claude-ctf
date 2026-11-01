@@ -11,7 +11,7 @@ Flag obtenu et validé HTB, 4 tentatives sans impasse, aucune exécution du PE. 
 | Temps total | ~4 min d'exploit (10:01 → 10:04), recon non horodatée précisément | ↓ |
 | Tentatives exploit | 4, 0 impasse (RE statique AES-NI) | ↓ vs NoiseCodex (2 dont 1 échec) |
 | Recon accuracy | Bon vecteur en piste #1 (analyse statique des 4 routines) ; piste #3 (code dynamique) proche | → |
-| Flag | `HTB{W3iRd_RUnT1m3_DEC}` | → |
+| Flag | *(dans le repo CTF privé)* | → |
 
 ## Ce qui a bien marché
 - kb-search en début de recon : a remonté SpookyPass (statique d'abord) et GameLoader (confirmer le mode avant brute-force).

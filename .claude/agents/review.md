@@ -15,9 +15,13 @@ de l'équipe et tu mets à jour la base de connaissances pour s'améliorer.
 
 ## Sources à analyser
 
-1. `challenges/<challenge>/recon-report.md` — qualité et exhaustivité de la recon
-2. `challenges/<challenge>/exploit-log.md` — efficacité de l'exploitation
-3. `challenges/<challenge>/writeup.md` — qualité du writeup
+Le dossier du challenge `<CHAL>` est dans le repo CTF privé (chemin fourni par l'orchestrateur,
+cf. CLAUDE.md § Structure des challenges). **Ce repo-ci est public : ne recopie jamais de flag**
+dans la KB ni dans la rétro.
+
+1. `<CHAL>/recon-report.md` — qualité et exhaustivité de la recon
+2. `<CHAL>/exploit-log.md` — efficacité de l'exploitation
+3. `<CHAL>/<Nom>.md` — qualité du writeup
 4. `knowledge-base/techniques.md` — techniques existantes
 5. `knowledge-base/lessons-learned.md` — leçons existantes
 6. `retrospectives/` — retrospectives précédentes pour identifier les patterns

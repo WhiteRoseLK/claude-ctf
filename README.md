@@ -30,15 +30,18 @@ Les secrets (tokens, config plateforme) ne sont **jamais versionnés** (voir `.g
 ## Comment ça marche
 
 - **Exécution dans Exegol.** Les commandes d'attaque tournent dans un conteneur dédié au
-  challenge (`challenges/<nom>/work/` monté sur `/workspace`). Un **hook** impose cette règle :
+  challenge (`<CHAL>/work/` monté sur `/workspace`). Un **hook** impose cette règle :
   toute commande hors orchestration lancée sur l'hôte demande une acceptation expresse.
 - **Technique = skills.** `solve-challenge` (dispatcher) route vers `ctf-web`, `ctf-pwn`,
   `ctf-reverse`, `ctf-crypto`, `ctf-forensics`, `ctf-malware`, `ctf-osint`, `ctf-misc`, `ctf-ai-ml`.
   On ne duplique jamais une technique de skill dans le repo.
 - **Mémoire.** `knowledge-base/` (journal expérientiel) + `retrospectives/`, interrogés par
   pertinence via `tools/kb-search/kb_search.py "<mots-clés>"` (TF-IDF, zéro dépendance).
-- **Writeups → vault Obsidian perso** `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md`,
-  jamais dans le repo partagé (gabarit : `templates/writeup-template.md`).
+- **Challenges → repo CTF privé séparé.** Tout ce qui touche à un challenge (notes, recon,
+  exploit-log, flag, solveur, writeup Obsidian) vit dans `<CHAL>` =
+  `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>/`, un repo git privé qui sert aussi de vault
+  Obsidian. Ce repo (public) ne garde que l'outillage, la KB et les rétros, **sans aucun flag**
+  (gabarit de writeup : `templates/writeup-template.md`).
 
 ## Workflow
 
@@ -54,8 +57,8 @@ le record committé reste complet et régénérable.
    (avec la catégorie détectée). Aucune exploitation.
 4. **Exploit** — l'agent `exploit` charge le skill `ctf-<catégorie>`, attaque, logge tout dans
    `exploit-log.md`, extrait le flag.
-5. `/ctf-submit <challenge> <flag>` — archive + soumet + sauve le solveur dans `solution/`.
-6. **Selon le mode** — training : **Writeup** (agent `writeup` → vault, avec méthodo/tips/erreurs) +
+5. `/ctf-submit <challenge> <flag>` — archive + soumet + sauve le solveur dans `<CHAL>/solution/`.
+6. **Selon le mode** — training : **Writeup** (agent `writeup` → `<CHAL>/<Nom>.md`, avec méthodo/tips/erreurs) +
    `/ctf-retro` (agent `review` approfondi → KB + post-mortem) ; competition : différés.
 
 > Pour un challenge réseau, `/ctf-start` peut proposer des **Agent Teams** (recon + exploit en
@@ -78,8 +81,10 @@ claude-ctf/
 │   ├── commands/             # ctf-start, ctf-submit, ctf-retro
 │   └── settings.json         # permissions, hook, MCP git
 ├── knowledge-base/           # mémoire : techniques.md, lessons-learned.md
-├── challenges/<nom>/          # notes, recon-report, exploit-log, flag, cleanup.sh, work/ (gitignoré)
 └── retrospectives/           # post-mortems <date>-<challenge>.md
+
+~/Documents/CTF/CTF/          # repo CTF privé séparé (= vault Obsidian)
+└── <Plateforme>/<Catégorie>/<Nom>/   # <Nom>.md, notes, recon-report, exploit-log, flag, solution/, work/ (gitignoré)
 ```
 
 ## Amélioration continue

@@ -12,7 +12,7 @@ Flag obtenu en 1 tentative (le vecteur #1 du recon). Délégation et Exegol resp
 | Temps par phase | recon ~4 min de commandes (20:54 → 20:58), exploit ~1 min (21:06), writeup à venir | ↓ |
 | Tentatives exploit | 1 (succès direct), 0 impasse | ↓ (vs 4 pour PartialEncryption) |
 | Recon accuracy | Bon vecteur en #1 (lecture par chemin direct) | ↑ |
-| Flag | `HTB{Us3rL4nd_R00tK1t_R3m0v3dd!}` | |
+| Flag | *(dans le repo CTF privé)* | |
 
 Note : le timing de la recon est approximatif. Seules 3 lignes du log ont une heure précise (20:54:21, 20:54:58, 21:06). Le trou entre 20:55 et 21:06 vient probablement de la latence orchestrateur et du re-spawn éventuel. Il n'est pas tracé.
 

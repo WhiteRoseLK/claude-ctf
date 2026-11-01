@@ -12,7 +12,7 @@ Flag obtenu et validé HTB, mais temps perdu sur un LLL maison et recon-report l
 | Tentatives exploit | 2 (LLL pur-Python ❌, fpylll ✅) | → |
 | Vecteur | 1 seul : approximate-GCD par SDA + LLL | → |
 | Recon accuracy | Bon vecteur identifié dès l'analyse de source.py | → |
-| Flag | `HTB{LLL_r3c0V3R_7H3_tRu7H_fR0m_7H3_n0153}` | → |
+| Flag | *(dans le repo CTF privé)* | → |
 
 ## Ce qui a bien marché
 - Analyse de la source rapide et juste : `2*entropy + b < 2^514 ≪ p` donc `b = (c mod p) & 1`, et

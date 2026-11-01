@@ -51,9 +51,9 @@ Bascule : `/ctf-mode training|competition`. Lecture : `MODE=$(cat .ctf-mode 2>/d
 
 1. **Init** → l'orchestrateur lance `/ctf-start <plateforme> <challenge>` (structure, mémoire, conteneur Exegol)
 2. **Phase Recon** → l'orchestrateur **délègue au sous-agent `recon`** : charge `solve-challenge`, triage, produit `recon-report.md` avec la **catégorie détectée**
-3. **Phase Exploit** → l'orchestrateur **délègue au sous-agent `exploit`** : charge le skill `ctf-<catégorie>`, attaque dans le conteneur Exegol, produit `exploit-log.md` + `flag.txt` + solveur dans `solution/`
-4. **Soumission** → l'orchestrateur lance `/ctf-submit <challenge> <flag>` (archive + soumet + sauve le solveur dans `solution/`)
-5. **Writeup** (⚙ training : auto · competition : différé) → sous-agent `writeup` → vault Obsidian `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md`, jamais dans le repo. Inclut **méthodo + tips + erreurs à éviter**, pas que la solution.
+3. **Phase Exploit** → l'orchestrateur **délègue au sous-agent `exploit`** : charge le skill `ctf-<catégorie>`, attaque dans le conteneur Exegol, produit `exploit-log.md` + `flag.txt` + solveur dans `<CHAL>/solution/`
+4. **Soumission** → l'orchestrateur lance `/ctf-submit <challenge> <flag>` (archive + soumet + sauve le solveur dans `<CHAL>/solution/`, commit dans le repo CTF)
+5. **Writeup** (⚙ training : auto · competition : différé) → sous-agent `writeup` → `<CHAL>/<Nom>.md` (repo CTF privé = vault Obsidian), jamais dans ce repo. Inclut **méthodo + tips + erreurs à éviter**, pas que la solution.
 6. **Review** (⚙ training uniquement) → `/ctf-retro <challenge>` → sous-agent `review` en mode approfondi (KB/rétro **+ post-mortem process/cadre**). En compétition : sautée.
 
 ## Conventions obligatoires
@@ -71,27 +71,36 @@ Bascule : `/ctf-mode training|competition`. Lecture : `MODE=$(cat .ctf-mode 2>/d
 - Après chaque challenge, mettre à jour ces fichiers (via `/ctf-retro`)
 
 ### Git
-- Commit à chaque fin de phase (recon, exploit, writeup, retro)
+- **Deux repos** : le record du challenge (notes, recon, exploit-log, flag, solution, writeup) se commit dans
+  le **repo CTF privé** (`$CTF_REPO`) ; ce repo-ci (public) ne reçoit que KB, rétros et outillage.
+- Commit à chaque fin de phase (recon, exploit, writeup → repo CTF ; retro → ce repo)
 - Messages de commit : `[phase] challenge-name: description`
 - Exemples : `[recon] Keeper: scan initial nmap`, `[exploit] Keeper: privesc via CVE-2023-xxxxx`
 
 ## Structure des challenges
 
+Les challenges vivent **hors de ce repo** (public), dans le **repo CTF privé**
+`WhiteRoseLK/ctf-writeups`, cloné sur `CTF_REPO=~/Documents/CTF/CTF` (c'est aussi le vault Obsidian).
+Dossier d'un challenge, noté **`<CHAL>`** partout :
+`$CTF_REPO/<Plateforme|Événement>/<Catégorie>/<Nom>/` — plateforme `HackTheBox`, `RootMe`, ou nom
+d'événement (`Airbus-Google-2026`…) ; catégorie de la plateforme (`_A-trier` si inconnue à l'init) ;
+`<Nom>` sans espaces (underscores).
+
 ```
-challenges/<nom-challenge>/
+<CHAL>/
+├── <Nom>.md            # Writeup Obsidian (agent writeup)
 ├── notes.md            # Notes libres de l'orchestrateur
 ├── recon-report.md     # Rapport de reconnaissance structuré
 ├── exploit-log.md      # Journal chronologique des tentatives
 ├── flag.txt            # Le flag extrait
-├── solution/           # Solveur(s) finaux — COMMITÉ (repro même après cleanup de work/)
+├── solution/           # Solveur(s) finaux — commités dans le repo CTF (repro après cleanup de work/)
 ├── cleanup.sh          # Script de nettoyage (supprime le conteneur Exegol et work/)
-├── .gitignore          # Ignore work/
 └── work/               # Fichiers de travail temporaires (montés dans Exegol sur /workspace)
                         # → NON commités, supprimés par cleanup.sh après le challenge
 ```
 
-> **Writeup** : publié dans le vault Obsidian perso `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>.md`,
-> **jamais** dans le repo (gitignoré). Le repo partagé garde KB + rétros comme mémoire.
+> Le `.gitignore` racine du repo CTF ignore `work/`. Ce repo-ci (public) ne contient **aucun**
+> flag, log d'exploit ni solveur : il garde KB + rétros comme mémoire.
 
 ## Environnement d'exécution — Exegol
 
@@ -115,7 +124,7 @@ L'hôte macOS n'a pas ces outils → ne pas lancer les commandes d'attaque direc
 #   --offline ; sans stdin il quitte sans créer le conteneur. On acquitte en alimentant des
 #   newlines. --accept-eula couvre l'EULA. Image : toujours `free` (les autres sont payantes).
 yes '' | exegol start "ctf-<nom>" free --offline --accept-eula \
-  --workspace "$(pwd)/challenges/<nom>/work" \
+  --workspace "<CHAL>/work" \
   --disable-X11 -s bash
 # + --vpn ~/htb.ovpn  si le challenge a une cible réseau HTB (sinon omettre)
 
@@ -141,7 +150,7 @@ Le nom Docker réel est `exegol-ctf-<nom>`. Aucun `exegol-mcp` n'est configuré 
 docker exec exegol-ctf-<nom> bash -c "cd /workspace && <commande>"
 ```
 
-Écrire un fichier pour le conteneur : l'écrire dans `challenges/<nom>/work/` (monté sur
+Écrire un fichier pour le conteneur : l'écrire dans `<CHAL>/work/` (monté sur
 `/workspace`). En fin de challenge, `cleanup.sh` supprime le conteneur via
 `docker rm -f exegol-ctf-<nom>` (fiable, sans prompt — `exegol stop/remove` bute sur le
 prompt de MAJ) puis supprime `work/`.
