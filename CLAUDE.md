@@ -82,10 +82,16 @@ Bascule : `/ctf-mode training|competition`. Lecture : `MODE=$(cat .ctf-mode 2>/d
 Les challenges vivent **hors de ce repo** (public), dans le **repo CTF privé**
 `WhiteRoseLK/ctf-writeups`, cloné sur `CTF_REPO=~/Documents/CTF/CTF` (c'est aussi le vault Obsidian).
 Dossier d'un challenge, noté **`<CHAL>`** partout :
-`$CTF_REPO/<Plateforme|Événement>/<Catégorie>/<Nom>/` — plateforme `HackTheBox`, `RootMe`, ou nom
-d'événement (`Airbus-Google-2026`…) ; catégorie de la plateforme (`_A-trier` si inconnue à l'init, puis `git mv` vers la catégorie
+`$CTF_REPO/<Plateforme>/<Catégorie>/<Nom>/` pour une plateforme permanente (`HackTheBox`, `RootMe`),
+`$CTF_REPO/<Événement>/<Année>/<Catégorie>/<Nom>/` pour un CTF ponctuel (`THCon/2026/…`) ; catégorie de la plateforme (`_A-trier` si inconnue à l'init, puis `git mv` vers la catégorie
 détectée par le recon avant le writeup) ;
 `<Nom>` sans espaces (underscores).
+
+**CTF ponctuel : synthèse obligatoire.** Chaque `<Événement>/<Année>/README.md` résume l'édition en
+un coup d'œil (date, score, tableau challenge | catégorie | points | statut ✅ résolu / ⚠️ tenté /
+❌ non résolu | lien writeup) ; `<Événement>/README.md` liste les éditions et le `README.md` racine
+du repo CTF les événements. L'orchestrateur crée la ligne à `/ctf-start` et la met à jour à
+`/ctf-submit` (et en fin d'événement pour les challenges non tentés).
 
 ```
 <CHAL>/

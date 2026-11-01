@@ -8,7 +8,9 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
 
 1. **Créer la structure du challenge dans le repo CTF privé** (jamais dans ce repo public) —
    `<CHAL>` = `$CTF_REPO/<Plateforme>/<Catégorie>/<Nom>/` (cf. CLAUDE.md § Structure des challenges) :
-   `htb` → `HackTheBox`, `rootme` → `RootMe`, sinon nom de l'événement ; catégorie donnée par la
+   `htb` → `HackTheBox`, `rootme` → `RootMe` ; CTF ponctuel → `<Événement>/<Année>` (ex. `THCon/2026`),
+   en créant/complétant `<Événement>/<Année>/README.md` (synthèse, ligne du challenge en ⚠️ tenté),
+   `<Événement>/README.md` et le tableau du `README.md` racine ; catégorie donnée par la
    plateforme (`ctf_cli.py list` / API), `_A-trier` si inconnue ; `<Nom>` avec underscores.
    ```bash
    CTF_REPO=~/Documents/CTF/CTF

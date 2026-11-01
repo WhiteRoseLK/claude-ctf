@@ -11,6 +11,7 @@ le skill `ctf-submit` (qui appelle `~/.claude/ctf/ctf_cli.py submit --id <id> --
 1. **Archiver le flag** dans `<CHAL>/flag.txt` (repo CTF privé, cf. CLAUDE.md § Structure ;
    localiser avec `find ~/Documents/CTF/CTF -type d -name '<nom>' -not -path '*/work/*'`)
    — juste le flag, une ligne. **Jamais** de flag dans ce repo-ci (public).
+   CTF ponctuel : passer la ligne du challenge à ✅ dans `<Événement>/<Année>/README.md` (synthèse).
 
 2. **Soumettre à la plateforme** si une connexion est active. Vérifie d'abord :
    ```bash

@@ -1,6 +1,6 @@
 # CTF Multi-Agent Workspace
 
-Workspace Claude Code pour résoudre des challenges CTF (HackTheBox, Root-Me, CTFd…).
+Workspace multi-agent (Claude Code par défaut) pour résoudre des challenges CTF (HackTheBox, Root-Me, CTFd…).
 C'est une **couche d'orchestration + mémoire** par-dessus une suite de skills CTF vendorés :
 les agents orchestrent, les skills fournissent la technique, et chaque challenge alimente
 une knowledge base qui sert aux suivants.
@@ -18,8 +18,8 @@ ils vivent dans Exegol.
 ## Setup
 
 ```bash
-git clone https://github.com/WhiteRoseLK/claude-ctf.git
-cd claude-ctf
+git clone https://github.com/WhiteRoseLK/ctf-agents.git
+cd ctf-agents
 ./install.sh            # installe les deps + symlinke skills/ et le CLI (idempotent)
 claude                  # puis, dans Claude Code :  /ctf-connect htb <TOKEN>
 ```
@@ -39,7 +39,8 @@ Les secrets (tokens, config plateforme) ne sont **jamais versionnés** (voir `.g
   pertinence via `tools/kb-search/kb_search.py "<mots-clés>"` (TF-IDF, zéro dépendance).
 - **Challenges → repo CTF privé séparé.** Tout ce qui touche à un challenge (notes, recon,
   exploit-log, flag, solveur, writeup Obsidian) vit dans `<CHAL>` =
-  `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>/`, un repo git privé qui sert aussi de vault
+  `~/Documents/CTF/CTF/<Plateforme>/<Catégorie>/<Nom>/` (CTF ponctuel : `<Événement>/<Année>/…`,
+  avec un `README.md` de synthèse par édition), un repo git privé qui sert aussi de vault
   Obsidian. Ce repo (public) ne garde que l'outillage, la KB et les rétros, **sans aucun flag**
   (gabarit de writeup : `templates/writeup-template.md`).
 
@@ -67,7 +68,7 @@ le record committé reste complet et régénérable.
 ## Structure
 
 ```
-claude-ctf/
+ctf-agents/
 ├── CLAUDE.md                 # instructions du workspace
 ├── install.sh                # bootstrap : deps + symlinks skills/CLI
 ├── skills/                   # skills CTF vendorés (solve-challenge, ctf-*, intégration plateforme)

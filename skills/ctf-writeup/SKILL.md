@@ -49,7 +49,7 @@ If the orchestrator gave a path, use it exactly.
   - Category = the platform's category (`Crypto`, `Web`, `Reversing`, `Pwn`, `Forensics`, `Misc`, `OSINT`, `Mobile`, …)
   - Example: `~/Documents/CTF/CTF/HackTheBox/Crypto/Embryonic_Plant/Embryonic_Plant.md`
 - **RootMe**: `~/Documents/CTF/CTF/RootMe/<Category>/<ChallengeName>/<ChallengeName>.md`
-- **Other CTF event**: `~/Documents/CTF/CTF/<EventName>/<Category>/<ChallengeName>/<ChallengeName>.md`
+- **Other CTF event**: `~/Documents/CTF/CTF/<EventName>/<Year>/<Category>/<ChallengeName>/<ChallengeName>.md` (and keep `<EventName>/<Year>/README.md`, the edition summary, up to date)
 
 Create the directory if it doesn't exist (`mkdir -p`). Use the exact challenge name as the filename (spaces replaced with underscores).
 

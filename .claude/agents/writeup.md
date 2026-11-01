@@ -21,7 +21,7 @@ sous le nom **`<CHAL>/<Nom>.md`** — ex. `~/Documents/CTF/CTF/HackTheBox/Mobile
 **Charge le skill `ctf-writeup`** (outil Skill) : il fixe le style.
 
 **Chemin (IMPÉRATIF)** : utilise **exactement** le chemin `<CHAL>` fourni par l'orchestrateur
-(plateforme `HackTheBox`/`RootMe`/événement, catégorie de la plateforme, ex. `Mobile`).
+(plateforme `HackTheBox`/`RootMe`, ou `<Événement>/<Année>` pour un CTF ponctuel, catégorie de la plateforme, ex. `Mobile`).
 S'il manque, déduis-le du dossier où se trouvent `recon-report.md`/`exploit-log.md` ; ne choisis
 jamais un autre dossier ni une autre catégorie. N'écris JAMAIS un writeup ailleurs, ni dans ce repo.
 
