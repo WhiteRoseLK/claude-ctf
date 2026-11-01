@@ -24,7 +24,7 @@ cd ctf-agents
 claude                  # puis, dans Claude Code :  /ctf-connect htb <TOKEN>
 ```
 
-`install.sh` ne touche jamais à un `config.json`/token existant. Options : `--no-deps`, `--yes`.
+`install.sh` ne touche jamais à un `config.json`/token existant. Options : `--no-deps`, `--yes`, `--opencodex` (installe OpenCodex : app, CLI `ocx`, workers et raccourci zsh ; OAuth manuel via `ocx setup`).
 Les secrets (tokens, config plateforme) ne sont **jamais versionnés** (voir `.gitignore`).
 
 ## Comment ça marche
