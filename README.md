@@ -9,6 +9,7 @@ une knowledge base qui sert aux suivants.
 
 - **Claude Code** (`npm install -g @anthropic-ai/claude-code`), plan Max recommandé.
 - **Docker**, **Exegol** (environnement d'exécution des outils) et **Obsidian** (vault des writeups).
+- *(Optionnel)* **OpenCodex** pour faire tourner les agents sur plusieurs providers (voir § OpenCodex).
   → `install.sh` tente d'installer ce qui manque (Homebrew sur macOS ; sur Linux : pipx pour
   Exegol, script officiel pour Docker). Sur Linux, Obsidian (appli GUI) reste manuel (AppImage/flatpak).
 
@@ -24,8 +25,26 @@ cd ctf-agents
 claude                  # puis, dans Claude Code :  /ctf-connect htb <TOKEN>
 ```
 
-`install.sh` ne touche jamais à un `config.json`/token existant. Options : `--no-deps`, `--yes`.
+`install.sh` ne touche jamais à un `config.json`/token existant. Options : `--no-deps`, `--yes`, `--opencodex` (installe OpenCodex : app, CLI `ocx`, workers et raccourci zsh ; OAuth manuel via `ocx setup`).
 Les secrets (tokens, config plateforme) ne sont **jamais versionnés** (voir `.gitignore`).
+
+### OpenCodex (optionnel, multi-provider)
+
+`./install.sh --opencodex` installe et configure [OpenCodex](https://opencodex.me), un proxy qui
+répartit les agents entre plusieurs providers (Anthropic et Google Antigravity) :
+
+1. **App desktop** (runtime du proxy, macOS, via `brew install --cask opencodex`) et **CLI `ocx`**
+   (`npm install -g @bitkyc08/opencodex`, Node.js requis).
+2. **Connexion des providers** : manuelle, par OAuth → lancer `ocx setup` (le script signale ceux
+   qui ne sont pas connectés).
+3. **Workers en failover** déclarés comme sous-agents délégables : `flash`→`haiku`, `haiku`→`flash`,
+   `sonnet`→`argon`, `argon`→`sonnet`, `opus`→`argon` (si le premier modèle est indisponible, le
+   second prend le relais).
+4. **Raccourci zsh** (sur confirmation, bloc délimité dans `~/.zshrc`) : `ocx claude` lance
+   l'orchestrateur sur `claude-sonnet-5-5` (variable `OCX_MODEL` d'`install.sh`), sauf si un
+   `--model` est passé. `claude` seul n'est pas affecté. Pour le retirer : supprimer le bloc.
+
+Relancer `./install.sh --opencodex` est sans effet de bord (combos mis à jour, raccourci non dupliqué).
 
 ## Comment ça marche
 

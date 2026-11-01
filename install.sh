@@ -129,6 +129,112 @@ link() {
   info "$name -> ${src#$REPO/}"
 }
 
+# ---------------------------------------------------------------------------
+# OpenCodex (optionnel, --opencodex) : orchestrateur multi-provider pour les CTF.
+#   - installe l'app desktop (runtime du proxy) + le CLI `ocx` (npm)
+#   - configure 5 workers failover (combos) + le roster délégable par l'orchestrateur
+#   - ajoute à ~/.zshrc le raccourci qui lance `ocx claude` sur l'orchestrateur $OCX_MODEL
+# Suppose les providers OpenCodex nommés `anthropic` et `google-antigravity` (adapter sinon).
+# Non destructif : l'OAuth des providers reste manuel (`ocx setup`), le raccourci n'écrase rien.
+setup_opencodex() {
+  echo "== OpenCodex (optionnel) =="
+
+  # 1) App desktop (runtime du proxy) — macOS uniquement
+  if [ "$OS" = Darwin ]; then
+    if [ -d "/Applications/OpenCodex.app" ]; then
+      info "OpenCodex.app : déjà installé"
+    elif have brew; then
+      if ask "Installer l'app OpenCodex (brew install --cask opencodex) ?"; then
+        brew install --cask opencodex && info "OpenCodex.app : installé" || err "OpenCodex.app : échec"
+      else
+        warn "OpenCodex.app : ignoré"
+      fi
+    else
+      warn "OpenCodex.app : Homebrew requis (https://opencodex.me)"
+    fi
+  else
+    warn "OpenCodex cible macOS — app desktop ignorée sur $OS"
+  fi
+
+  # 2) CLI `ocx` (npm) — fournit la commande `ocx claude`
+  have node || warn "Node.js absent — requis pour le CLI ocx (npm)."
+  ensure_dep "OpenCodex CLI (ocx)" ocx \
+    "npm install -g @bitkyc08/opencodex@2.96.0" \
+    "npm install -g @bitkyc08/opencodex@2.96.0" \
+    "Nécessite Node.js/npm."
+
+  if ! have ocx; then
+    warn "ocx indisponible — workers et raccourci sautés (installez-le puis relancez --opencodex)."
+    echo; return 0
+  fi
+
+  # 3) Proxy + providers (OAuth interactif, non automatisé)
+  ocx status >/dev/null 2>&1 || ocx start >/dev/null 2>&1 || true
+  _check_provider() {
+    local name="$1" pattern="$2"
+    if ocx account list 2>/dev/null | grep -qiE "$pattern"; then
+      info "Provider $name : connecté"
+    else
+      warn "Provider $name non connecté — lancez 'ocx setup' (login OAuth)"
+    fi
+  }
+  _check_provider "Anthropic" "anthropic.*active"
+  _check_provider "Google (antigravity)" "google-antigravity.*active"
+
+  # 4) Workers failover (combos) + roster délégable — idempotent (upsert)
+  echo "  Workers (combos failover + roster)…"
+  _ocx_combo() {
+    ocx combo set "$1" --targets "$2" --strategy failover --cooldown-reprobe on --display-name "$3" >/dev/null 2>&1 \
+      && info "combo $1 ($3)" || warn "combo $1 : échec (providers configurés ?)"
+  }
+  _ocx_combo flash  "google-antigravity/gemini-3.8-flash,anthropic/claude-haiku-5-5" "flash→haiku"
+  _ocx_combo haiku  "anthropic/claude-haiku-5-5,google-antigravity/gemini-3.8-flash" "haiku→flash"
+  _ocx_combo sonnet "anthropic/claude-sonnet-5-5,google-antigravity/gemini-4-argon"  "sonnet→argon"
+  _ocx_combo argon  "google-antigravity/gemini-4-argon,anthropic/claude-sonnet-5-5"  "argon→sonnet"
+  _ocx_combo opus   "anthropic/claude-opus-5-5,google-antigravity/gemini-4-argon"    "opus→argon"
+  ocx agent subagents set combo/flash,combo/haiku,combo/sonnet,combo/argon,combo/opus >/dev/null 2>&1 \
+    && info "roster : flash, haiku, sonnet, argon, opus" \
+    || warn "roster : échec (providers configurés ?)"
+
+  # 5) Raccourci zsh : `ocx claude` -> orchestrateur $OCX_MODEL (sessions CTF)
+  local marker_start="# >>> claude_ctf opencodex >>>"
+  local marker_end="# <<< claude_ctf opencodex <<<"
+  if grep -qF "$marker_start" "$ZSHRC" 2>/dev/null; then
+    info "Raccourci zsh : déjà présent dans ${ZSHRC/#$HOME/~}"
+  elif grep -q 'ocx()' "$ZSHRC" 2>/dev/null; then
+    warn "Une fonction ocx() existe déjà dans ${ZSHRC/#$HOME/~} — raccourci NON ajouté (évite le conflit)"
+  elif ask "Ajouter à ${ZSHRC/#$HOME/~} le raccourci 'ocx claude' (orchestrateur $OCX_MODEL) ?"; then
+    cat >> "$ZSHRC" <<ZSHRC_OCX
+
+$marker_start
+# Force l'orchestrateur sur $OCX_MODEL pour 'ocx claude' (sessions CTF).
+# N'affecte pas 'claude' direct, ni 'ocx claude config/desktop/intercept/integration',
+# ni un --model/-m explicite. Retirer = supprimer ce bloc.
+ocx() {
+  if [ "\$1" = "claude" ]; then
+    case "\$2" in
+      config|desktop|intercept|integration) command ocx "\$@" ;;
+      *)
+        shift
+        case " \$* " in
+          *" --model "*|*" --model="*|*" -m "*) command ocx claude "\$@" ;;
+          *) command ocx claude --model "$OCX_MODEL" "\$@" ;;
+        esac
+        ;;
+    esac
+  else
+    command ocx "\$@"
+  fi
+}
+$marker_end
+ZSHRC_OCX
+    info "Raccourci zsh ajouté — ouvrez un nouveau terminal ou 'source ${ZSHRC/#$HOME/~}'"
+  else
+    warn "Raccourci zsh : ignoré"
+  fi
+  echo
+}
+
 [ "$INSTALL_DEPS" = 1 ] && install_deps || echo "== Dépendances ignorées (--no-deps) =="
 
 echo "== Installation des skills CTF =="
@@ -150,6 +256,8 @@ else
   cp "$CLI_SRC/config.example.json" "$CTF_DST/config.json"
   warn "config.json créé depuis le template — éditez-le ou lancez /ctf-connect"
 fi
+
+if [ "$WANT_OCX" = 1 ]; then setup_opencodex; else echo "== OpenCodex ignoré (passez --opencodex pour l'activer) =="; fi
 
 echo
 info "Terminé. Testez avec : /ctf-connect <plateforme> <token>  puis  /ctf-list"
