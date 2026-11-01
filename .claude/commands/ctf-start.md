@@ -6,15 +6,22 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
 
 ## Actions à réaliser
 
-1. **Créer la structure du challenge** (PAS de writeup.md : il ira dans le vault Obsidian) :
+1. **Créer la structure du challenge dans le repo CTF privé** (jamais dans ce repo public) —
+   `<CHAL>` = `$CTF_REPO/<Plateforme>/<Catégorie>/<Nom>/` (cf. CLAUDE.md § Structure des challenges) :
+   `htb` → `HackTheBox`, `rootme` → `RootMe`, sinon nom de l'événement ; catégorie donnée par la
+   plateforme (`ctf_cli.py list` / API), `_A-trier` si inconnue ; `<Nom>` avec underscores.
+   ```bash
+   CTF_REPO=~/Documents/CTF/CTF
+   git -C "$CTF_REPO" pull -q --ff-only   # repo à jour avant d'écrire
+   CHAL="$CTF_REPO/<Plateforme>/<Catégorie>/<Nom>"
    ```
-   challenges/$ARGUMENTS[1]/
+   ```
+   <CHAL>/
    ├── notes.md
    ├── recon-report.md
    ├── exploit-log.md
    ├── flag.txt
    ├── cleanup.sh       # supprime le conteneur Exegol (docker rm -f) + work/
-   ├── .gitignore       # ignore work/
    └── work/            # fichiers du challenge (monté sur /workspace dans Exegol)
    ```
 
@@ -24,6 +31,7 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
    - Cible (IP/URL)
    - Date de début
    - Catégorie si connue
+   - Chemin `<CHAL>` (les sous-agents travaillent là)
 
 3. **Consulter la knowledge base par pertinence** :
    ```bash
@@ -41,7 +49,7 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
    ```bash
    TOKEN=$(python3 -c "import json;print(json.load(open('$HOME/.claude/ctf/config.json'))['active']['token'])")
    curl -sL -H "Authorization: Bearer $TOKEN" -H "User-Agent: Mozilla/5.0" \
-     -o challenges/<nom>/work/challenge.zip \
+     -o "$CHAL/work/challenge.zip" \
      "https://labs.hackthebox.com/api/v4/challenge/download/<ID>"
    ```
    Beaucoup de zips HTB sont protégés par le mot de passe `hackthebox`. L'archive est **non
@@ -54,7 +62,7 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
    # `yes '' |` indispensable : Exegol bute encore sur un prompt « Press ENTER » (notice MAJ)
    # même avec --offline ; sans stdin il quitte sans créer le conteneur.
    yes '' | exegol start "ctf-<nom>" free --offline --accept-eula \
-     --workspace "$(pwd)/challenges/<nom>/work" --disable-X11 -s bash
+     --workspace "$CHAL/work" --disable-X11 -s bash
    # ajouter  --vpn ~/htb.ovpn  si cible réseau HTB
    # l'erreur « cannot attach stdin to a TTY » est normale : le conteneur tourne quand même
    docker ps --filter "name=ctf-<nom>" --format "{{.Names}}\t{{.Status}}"
@@ -62,7 +70,8 @@ Exemple : `/ctf-start rootme "SQL Injection - Authentication" https://challenge.
    Générer `cleanup.sh` qui fait `docker rm -f exegol-ctf-<nom>` (pas `exegol stop`, qui bute
    sur le prompt de MAJ) puis `rm -rf work/`.
 
-6. **Commit git** : `[init] <challenge-name>: initialisation du challenge`
+6. **Commit git dans le repo CTF** (`git -C "$CTF_REPO" add <CHAL> && git -C "$CTF_REPO" commit`) :
+   `[init] <challenge-name>: initialisation du challenge`. Rien n'est commité dans ce repo-ci.
 
 7. **Proposer le plan d'attaque** :
    - Recon → Exploit en séquence (recon charge `solve-challenge`, exploit le skill catégorie)

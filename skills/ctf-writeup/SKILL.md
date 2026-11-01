@@ -41,13 +41,17 @@ grep -rniE '(flag|ctf|eno|htb|pico)\{' . 2>/dev/null
 
 Determine the writeup output path based on the platform and category:
 
-- **HackTheBox (HTB)**: `~/Documents/CTF/CTF/HTB/<Category>/<ChallengeName>.md`
-  - Categories: `Crypto`, `Web`, `Reversing`, `Pwn`, `Forensics`, `Misc`, `OSINT`, `Malware`
-  - Example: `~/Documents/CTF/CTF/HTB/Crypto/Embryonic_Plant.md`
-- **RootMe**: `~/Documents/CTF/CTF/RootMe/<Category>/<ChallengeName>.md`
-- **Other CTF event**: `~/Documents/CTF/CTF/<EventName>/<Category>/<ChallengeName>.md`
+The writeup lives in the challenge folder of the private CTF repo (`~/Documents/CTF/CTF`, also the
+Obsidian vault), next to its notes, logs, flag and `solution/`: `<Platform>/<Category>/<Name>/<Name>.md`.
+If the orchestrator gave a path, use it exactly.
 
-Create the category directory if it doesn't exist (`mkdir -p`). Use the exact challenge name as the filename (spaces replaced with underscores).
+- **HackTheBox**: `~/Documents/CTF/CTF/HackTheBox/<Category>/<ChallengeName>/<ChallengeName>.md`
+  - Category = the platform's category (`Crypto`, `Web`, `Reversing`, `Pwn`, `Forensics`, `Misc`, `OSINT`, `Mobile`, …)
+  - Example: `~/Documents/CTF/CTF/HackTheBox/Crypto/Embryonic_Plant/Embryonic_Plant.md`
+- **RootMe**: `~/Documents/CTF/CTF/RootMe/<Category>/<ChallengeName>/<ChallengeName>.md`
+- **Other CTF event**: `~/Documents/CTF/CTF/<EventName>/<Category>/<ChallengeName>/<ChallengeName>.md`
+
+Create the directory if it doesn't exist (`mkdir -p`). Use the exact challenge name as the filename (spaces replaced with underscores).
 
 ### Step 3: Generate Write-up
 

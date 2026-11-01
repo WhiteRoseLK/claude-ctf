@@ -48,13 +48,15 @@
       "Bash(pbcopy*)",
       "Bash(pbpaste*)",
       "Bash(bash cleanup.sh*)",
-      "Bash(bash challenges/*)",
+      "Bash(bash ~/Documents/CTF/CTF/*/cleanup.sh)",
       "Bash(python3 tools/*)",
       "Bash(python3 ~/.claude/ctf/*)",
       "Bash(./install.sh*)",
       "Bash(docker exec exegol-ctf-*)"
     ],
-    "deny": []
+    "deny": [
+      "Bash(bash *..*)"
+    ]
   },
   "hooks": {
     "PreToolUse": [

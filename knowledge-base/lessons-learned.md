@@ -82,6 +82,22 @@ Format : **Date** / **Challenge** — **Problème** → **Cause** → **Solution
   **Règle** : remplir `notes.md` « Mémoire pertinente » avec la sortie de kb-search dès l'init,
   même quand la KB ne remonte rien (noter « aucune entrée pertinente »).
 
+### 2026-11-01 — APKey (Mobile/Android, HTB #240)
+- **Ce qui s'est passé** : 1er agent recon arrêté par l'utilisateur, bloqué sur `jadx` absent
+  (`apt-get install jadx` échoue dans l'image free). Relancé, il a utilisé `apktool`/smali et a trouvé
+  en 4 min que le Toast de succès ne dépend pas du mot de passe. Exploit : 1 tentative.
+- **Ce qu'on aurait dû faire** : prévoir `apktool` + smali d'office pour les APK (un seul essai d'install de
+  jadx, avec timeout, puis repli) au lieu de s'acharner sur l'outil manquant.
+- **Règle** : APK login : vérifier si la sortie de succès dépend de l'entrée avant tout crack. Voir
+  [[techniques]] § Reverse (APK).
+- **Process (bon)** : le recon a marqué ses index « lecture rapide non vérifiée » ; l'exploit les a
+  revérifiés dans le smali avant le solveur. À garder : toute valeur non vérifiée est signalée comme telle.
+- **Process (défaut)** : catégorie HTB « Mobile » inconnue des consignes du writeup, classé `HTB/Reversing`
+  alors que l'orchestrateur demandait `HackTheBox/Mobile` ; Description de l'énoncé absente (non récupérée à
+  l'init). **Règle** : passer au writeup le chemin vault exact et le texte de l'énoncé.
+- **Outillage** : conteneur sans pycryptodome ni pip : `cryptography` est là. Écrire le solveur avec
+  `cryptography` dès le départ.
+
 ---
 
 ## Règles accumulées (consultation rapide)
@@ -103,7 +119,11 @@ Format : **Date** / **Challenge** — **Problème** → **Cause** → **Solution
 11. `objdump` d'Exegol = aarch64 : inutilisable sur du x86 ; `strings`/`nm -D`/`readelf` (SuspiciousThreat).
 12. Jamais de token/IP/identifiants d'instance dans les fichiers committés ; ne pas lancer `ctf_cli.py status` (fuite du token).
 13. Rootkit userland (hook `readdir`) : lire par chemin absolu ou `getdents64` brut, sans modifier la cible.
+14. APK : `jadx` absent de l'image free, partir directement sur `apktool` + smali ; un seul essai d'install (timeout) (APKey).
+15. Login/vérif : avant de cracker, vérifier si la sortie de succès dépend de l'entrée ; sinon recalculer statiquement (APKey).
+16. Python Exegol : pas de pycryptodome/pip, utiliser `cryptography` pour AES (APKey).
+17. Writeup : transmettre chemin vault exact (catégorie HTB « Mobile » incluse) et texte de l'énoncé (APKey).
 
 ---
 
-_Dernière mise à jour : 2026-10-31 (SuspiciousThreat)_
+_Dernière mise à jour : 2026-11-01 (APKey)_

@@ -5,11 +5,13 @@
 # 1. Installe les dépendances si besoin (Docker, Exegol, Obsidian) — confirmation par défaut.
 # 2. Lie (symlinks) les skills et le CLI vendorés vers les emplacements attendus.
 # 3. Prépare la config plateforme SANS jamais écraser un token existant.
+# 4. (Optionnel, --opencodex) Installe OpenCodex, configure les workers multi-provider
+#    (Claude + Gemini, bascule quota auto) et le raccourci zsh « ocx claude » pour les CTF.
 #
 #   ~/.agents/skills/<skill>   -> <repo>/skills/<skill>
 #   ~/.claude/ctf/<fichier>    -> <repo>/tools/ctf-cli/<fichier>
 #
-# Options : --no-deps (ne pas installer de dépendances)  ·  --yes (tout accepter sans demander)
+# Options : --no-deps (pas de dépendances)  ·  --opencodex (installe + configure OpenCodex)  ·  --yes (tout accepter)
 # Idempotent : relançable sans effet de bord.
 
 set -euo pipefail
@@ -21,13 +23,19 @@ SKILLS_DST="$HOME/.agents/skills"
 CTF_DST="$HOME/.claude/ctf"
 OS="$(uname -s)"
 
+# OpenCodex (optionnel) : modèle par défaut de l'orchestrateur en session `ocx claude`, et le ~/.zshrc visé.
+OCX_MODEL="claude-sonnet-5-5"
+ZSHRC="${ZDOTDIR:-$HOME}/.zshrc"
+
 ASSUME_YES=0
 INSTALL_DEPS=1
+WANT_OCX=0
 for arg in "$@"; do
   case "$arg" in
-    --yes|-y)   ASSUME_YES=1 ;;
-    --no-deps)  INSTALL_DEPS=0 ;;
-    -h|--help)  grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
+    --yes|-y)     ASSUME_YES=1 ;;
+    --no-deps)    INSTALL_DEPS=0 ;;
+    --opencodex)  WANT_OCX=1 ;;
+    -h|--help)    grep '^#' "$0" | sed 's/^# \{0,1\}//'; exit 0 ;;
     *) echo "Option inconnue : $arg" >&2; exit 2 ;;
   esac
 done

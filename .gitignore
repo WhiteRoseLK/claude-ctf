@@ -14,11 +14,9 @@ tools/ctf-cli/workspace/
 __pycache__/
 *.pyc
 
-# Fichiers de travail par challenge (binaires, extractions, zips)
-challenges/*/work/
-
-# Writeups = vault Obsidian perso (~/Documents/CTF/CTF/...), pas dans le repo partagé
-challenges/*/writeup.md
+# Challenges (flags, logs, solveurs, writeups) = repo CTF privé ~/Documents/CTF/CTF,
+# jamais dans ce repo public. Garde-fou si un dossier est recréé ici par erreur.
+challenges/
 
 # === OS ===
 .DS_Store
