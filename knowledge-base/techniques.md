@@ -69,6 +69,25 @@ Format d'une entrée :
 
 ---
 
+### APK Android "login" : secret constant déchiffré hors-ligne depuis le smali (sans jadx)
+- **Catégorie / skill** : reverse (HTB « Mobile ») → `ctf-reverse`
+- **Challenge(s)** : APKey (HTB #240, Easy) : flag en ~5 min, 1 tentative
+- **Quand l'utiliser** : APK avec formulaire login dont le succès affiche un Toast/texte déchiffré.
+- **Insight clé** : se demander si le message de succès dépend de l'entrée. Ici `Toast(b.a(g.a()))`
+  n'a aucun argument issu du formulaire : clé AES et ciphertext sont des constantes. Le mot de passe
+  (MD5 comparé) n'a jamais besoin d'être cracké. À noter aussi : un hex fabriqué par
+  `Integer.toHexString(b & 0xff)` perd les zéros de tête (30 hex au lieu de 32), donc non crackable
+  via tables MD5 standard.
+- **Approche (outillage)** : `apktool` suffit si `jadx` est indisponible (`apt-get install jadx` échoue
+  dans l'image Exegol free). Lire `onClick` (`MainActivity$a.smali`), puis les classes de génération.
+  Obfuscation « listes de chaînes leurres + index fixe » : regex sur `const-string` et sur l'index
+  `const/4` précédant `ArrayList->get`, puis assemblage.
+- **Pièges** : registres smali réutilisés (`vN` change de valeur) : suivre les affectations dans l'ordre pour
+  l'ordre des `charAt`. `Cipher.getInstance("AES")` = AES/ECB/PKCS5 sous Android. Validation : padding
+  PKCS5 valide + texte lisible. Python Exegol : pas de pycryptodome ni pip, utiliser `cryptography`
+  (`Cipher(algorithms.AES(k), modes.ECB())`).
+- **Alternative lourde (non testée)** : Frida / émulateur pour appeler `b.a(g.a())`.
+
 ## Crypto
 
 ### Approximate-GCD (ACD) par SDA + LLL
