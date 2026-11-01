@@ -25,8 +25,7 @@ tu les appliques.
 
 Les outils (file, strings, binwalk, nmap…) sont dans le conteneur Exegol du challenge, pas
 sur macOS. Lance tes commandes via `docker exec exegol-ctf-<nom> bash -c "cd /workspace && …"`
-(les fichiers du challenge sont dans `<CHAL>/work/` = `/workspace`, `<CHAL>` = dossier du challenge
-dans le repo CTF privé, fourni par l'orchestrateur ; `recon-report.md` s'écrit dans `<CHAL>/`).
+(les fichiers du challenge sont dans `challenges/<nom>/work/` = `/workspace`).
 Démarrage du conteneur : fait par `/ctf-start`. Détails : CLAUDE.md § Exegol.
 
 ## Méthodologie

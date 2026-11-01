@@ -5,13 +5,12 @@ Exemple : `/ctf-retro GameLoader`
 
 ## Actions à réaliser
 
-1. **Localiser** le dossier du challenge dans le repo CTF privé :
-   `find ~/Documents/CTF/CTF -type d -name '$ARGUMENTS' -not -path '*/work/*'` → `<CHAL>`.
-   **Vérifier** qu'il existe et contient au minimum
+1. **Vérifier** que `challenges/$ARGUMENTS/` existe et contient au minimum
    `recon-report.md` et `exploit-log.md`. Sinon, signaler ce qui manque et s'arrêter.
 
 2. **Lancer l'agent `review`** (subagent) sur ce challenge. Il doit :
-   - analyser `<CHAL>/`{recon-report.md, exploit-log.md, `<Nom>.md` (writeup)} (lui passer le chemin `<CHAL>`)
+   - analyser `challenges/$ARGUMENTS/`{recon-report.md, exploit-log.md} et, s'il a été exporté,
+     le writeup `<DEST>/<Nom>.md` (`<DEST>` lu dans la ligne `Export :` de `notes.md` ; lecture seule)
    - **ne recopier aucun flag** dans la KB ni la rétro (ce repo est public)
    - mettre à jour `knowledge-base/techniques.md` (nouvelles techniques réellement utilisées)
    - mettre à jour `knowledge-base/lessons-learned.md` (erreurs et règles)

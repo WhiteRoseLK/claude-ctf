@@ -190,8 +190,9 @@ The agent will return the writeup as markdown content.
 
 ### Save to Obsidian
 Use the **MCP obsidian `write_note`** tool to save the writeup directly into the CTF vault:
-- **path**: `<PLATFORM>/<CATEGORY>/<CHALLENGE_NAME>/<CHALLENGE_NAME>.md`
-- `<PLATFORM>`: `HackTheBox`, `RootMe`, or the event name; `<CATEGORY>`: the platform's category
+- **path**: `<PLATFORM>/<CATEGORY>/<CHALLENGE_NAME>/<CHALLENGE_NAME>.md`, or for a one-off CTF event
+  `<EVENT>/<YEAR>/<CATEGORY>/<CHALLENGE_NAME>/<CHALLENGE_NAME>.md` (then update `<EVENT>/<YEAR>/README.md`, the edition summary)
+- `<PLATFORM>`: `HackTheBox` or `RootMe`; `<CATEGORY>`: the platform's category
 - `<CHALLENGE_NAME>`: challenge name, spaces replaced with underscores (e.g., `Buffer_Overflow_101`)
 
 The vault root is `/Users/mathieu/Documents/CTF/CTF` — paths are relative to it.

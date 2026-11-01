@@ -4,7 +4,7 @@
 Brique de récupération (le « retrieval » d'un RAG), en Python stdlib pur :
 indexe les entrées de knowledge-base/*.md et retrospectives/*.md, découpées
 par titres markdown, puis classe par similarité TF-IDF avec la requête.
-(Les writeups sont dans le repo CTF privé ~/Documents/CTF/CTF, hors de ce repo — non indexés.)
+(Les writeups sont exportés dans le repo CTF privé, hors de ce repo — non indexés.)
 
 Zéro dépendance externe — volontaire (repo partagé, « commencer simple »). Le jour
 où le corpus grossit, le scoring lexical peut être remplacé par des embeddings
@@ -40,7 +40,7 @@ def tokenize(text: str) -> list[str]:
 
 def iter_source_files() -> list[str]:
     """Fichiers de mémoire à indexer, relatifs à la racine du repo."""
-    # Les writeups vivent dans le repo CTF privé (hors de ce repo), pas indexés ici.
+    # Les writeups sont exportés dans le repo CTF privé (hors de ce repo), pas indexés ici.
     patterns = [
         "knowledge-base/*.md",
         "retrospectives/*.md",

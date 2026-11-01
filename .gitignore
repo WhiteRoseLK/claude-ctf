@@ -14,8 +14,8 @@ tools/ctf-cli/workspace/
 __pycache__/
 *.pyc
 
-# Challenges (flags, logs, solveurs, writeups) = repo CTF privé ~/Documents/CTF/CTF,
-# jamais dans ce repo public. Garde-fou si un dossier est recréé ici par erreur.
+# Challenges = travail local (flags, logs, solveurs) : jamais dans ce repo public.
+# Le writeup + record sont exportés vers le repo CTF privé ~/Documents/CTF/CTF.
 challenges/
 
 # === OS ===
