@@ -5,6 +5,7 @@ Used by Claude Code skills to automate CTF challenge workflows.
 """
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -519,7 +520,7 @@ def cmd_status(args):
         safe_profile = dict(profile)
         token = safe_profile.get("token")
         if token:
-            safe_profile["token"] = "…" + token[-8:] if len(token) > 8 else "…"
+            safe_profile["token"] = "sha256:" + hashlib.sha256(token.encode()).hexdigest()[:8]
         print(json.dumps({"connected": True, **safe_profile}))
 
 
