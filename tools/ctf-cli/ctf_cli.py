@@ -516,7 +516,11 @@ def cmd_status(args):
     if not profile:
         print(json.dumps({"connected": False}))
     else:
-        print(json.dumps({"connected": True, **profile}))
+        safe_profile = dict(profile)
+        token = safe_profile.get("token")
+        if token:
+            safe_profile["token"] = "…" + token[-8:] if len(token) > 8 else "…"
+        print(json.dumps({"connected": True, **safe_profile}))
 
 
 def main():
